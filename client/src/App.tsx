@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import Sidenav from './components/sidenav'
+import MainContent from './components/main-content'
 
 type Health = { status: string; time: string }
 
@@ -13,10 +15,11 @@ export default function App() {
   }, [])
 
   return (
-    <div style={{ fontFamily: 'system-ui', padding: 24 }}>
-      <h1>React + Express Starter</h1>
-      <p>Client is running. Below is server health:</p>
-      <pre>{JSON.stringify(health, null, 2)}</pre>
+    <div className='container'>
+      <Sidenav />
+      <MainContent>
+        <h1>Welcome</h1>
+      </MainContent>
     </div>
   )
 }
