@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react'
 
+type Health = { status: string; time: string }
+
 export default function App() {
-  const [health, setHealth] = useState(null)
+  const [health, setHealth] = useState<Health | null>(null)
 
   useEffect(() => {
     fetch('http://localhost:5000/api/health')
       .then(r => r.json())
-      .then(setHealth)
+      .then((data: Health) => setHealth(data))
       .catch(err => console.error('API error', err))
   }, [])
 
