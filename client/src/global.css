@@ -5,14 +5,27 @@
   --accent: #ff8c00;
 }
 
-body {
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
   margin: 0;
+  padding: 0;
+}
+
+body {
   font-family: roboto, sans-serif;
   background-color: var(--bg);
   color: var(--text);
 }
 
+a {
+  text-decoration: none;
+}
+
 .container {
-    display: flex;
-    min-height: 100vh;
+  display: flex;
+  min-height: 100vh;
 }

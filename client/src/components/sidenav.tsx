@@ -1,15 +1,36 @@
 import './sidenav.css'
+type MenuKey = 'home' | 'environments' | 'releases' | 'hotfixes'
 
-export default function Sidenav() {
+export default function Sidenav({
+  selected,
+  onSelect,
+}: {
+  selected: MenuKey
+  onSelect?: (key: MenuKey) => void
+}) {
+  const items: { key: MenuKey; label: string }[] = [
+    { key: 'home', label: 'Home' },
+    { key: 'environments', label: 'Environments' },
+    { key: 'releases', label: 'Releases' },
+    { key: 'hotfixes', label: 'Hotfixes' },
+  ]
+
   return (
     <aside className="sidenav">
       <h2 className="sidenav-title">Release Management System</h2>
       <nav>
         <ul className="sidenav-list">
-          <li><a href="#home" className="nav-link">Home</a></li>
-          <li><a href="#about" className="nav-link">Environments</a></li>
-          <li><a href="#contact" className="nav-link">Releases</a></li>
-          <li><a href="#contact" className="nav-link">Hotfixes</a></li>
+          {items.map((item) => (
+            <li key={item.key}>
+              <button
+                type="button"
+                className={`nav-link ${selected === item.key ? 'active' : ''}`}
+                onClick={() => onSelect?.(item.key)}
+              >
+                {item.label}
+              </button>
+            </li>
+          ))}
         </ul>
       </nav>
     </aside>

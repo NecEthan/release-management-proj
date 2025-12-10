@@ -1,24 +1,30 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import Sidenav from './components/sidenav'
+import Home from './features/Home'
+import Environments from './features/Environments'
+import Releases from './features/Releases'
+import Hotfixes from './features/Hotfixes'
 import MainContent from './components/main-content'
+import MenuKey from './types/menu-key.type'
 
-type Health = { status: string; time: string }
 
 export default function App() {
-  const [health, setHealth] = useState<Health | null>(null)
+  const [selected, setSelected] = useState<MenuKey>('home');
 
-  useEffect(() => {
-    fetch('http://localhost:5000/api/health')
-      .then(r => r.json())
-      .then((data: Health) => setHealth(data))
-      .catch(err => console.error('API error', err))
-  }, [])
+   const renderContent = () => {
+    switch (selected) {
+      case 'home': return <Home />
+      case 'environments': return <Environments />
+      case 'releases': return <Releases />
+      case 'hotfixes': return <Hotfixes />
+    }
+  }
 
   return (
     <div className='container'>
-      <Sidenav />
+      <Sidenav selected={selected} onSelect={setSelected} />
       <MainContent>
-        <h1>Welcome</h1>
+        {renderContent()}
       </MainContent>
     </div>
   )
