@@ -1,0 +1,70 @@
+.environments {
+  padding: 20px;
+}
+
+.environments h1 {
+  margin-bottom: 8px;
+}
+
+.environments p {
+  color: rgba(245, 245, 245, 0.7);
+  margin-bottom: 32px;
+}
+
+.environments-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  max-width: 1200px;
+}
+
+.env-card {
+  flex: 1 1 280px;
+  min-width: 280px;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 24px;
+  transition: all 0.2s ease;
+}
+
+.env-card:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.env-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #f5f5f5;
+  margin-bottom: 12px;
+}
+
+.env-version {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ff8c00;
+  font-family: 'Courier New', monospace;
+  margin-bottom: 16px;
+}
+
+.env-deployed {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.deployed-label {
+  font-size: 0.85rem;
+  color: rgba(245, 245, 245, 0.6);
+  font-weight: 500;
+}
+
+.deployed-time {
+  font-size: 0.95rem;
+  color: rgba(245, 245, 245, 0.9);
+  font-family: 'Courier New', monospace;
+}

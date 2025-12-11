@@ -1,15 +1,18 @@
 .sidenav {
+  position: sticky;
+  top: 0;
   width: 400px;
-  min-height: 100vh;
+  height: 100vh;
   background-color: #0a2a66;
   color: #ff8c00;
   border-right: 1px solid rgba(255, 255, 255, 0.15);
   padding: 16px;
   box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .sidenav-title {
-  font-size: 1.25rem;
+  font-size: 1.75rem;
   font-weight: 700;
   letter-spacing: 0.02em;
   margin-bottom: 24px;
@@ -30,13 +33,13 @@
 .nav-link {
   display: block;
   width: 100%;
-  padding: 12px 16px;
+  padding: 14px 16px;
   border: none;
   border-left: 3px solid transparent;
   background: transparent;
   color: inherit;
   text-align: left;
-  font-size: 0.95rem;
+  font-size: 1.15rem;
   font-weight: 500;
   cursor: pointer;
   text-decoration: none;
