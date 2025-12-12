@@ -3,52 +3,94 @@
   top: 0;
   width: 400px;
   height: 100vh;
-  background-color: #0a2a66;
+  background: linear-gradient(180deg, #0a2a66 0%, #061a44 100%);
   color: #ff8c00;
-  border-right: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 16px;
+  border-right: 2px solid rgba(255, 140, 0, 0.2);
+  padding: 32px 24px;
   box-sizing: border-box;
   overflow-y: auto;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
 }
 
 .sidenav-title {
-  font-size: 1.75rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  margin-bottom: 24px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 1.85rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid rgba(255, 140, 0, 0.3);
+  color: #ff8c00;
+  text-shadow: 0 2px 8px rgba(255, 140, 0, 0.3);
 }
 
 .sidenav-list {
   list-style: none;
   padding: 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
-.sidenav-list li, li {
-  margin-top: 4px;
+.sidenav-list li {
+  margin: 0;
 }
 
 .nav-link {
-  display: block;
+  display: flex;
+  align-items: center;
   width: 100%;
-  padding: 14px 16px;
+  padding: 16px 20px;
   border: none;
-  border-left: 3px solid transparent;
-  background: transparent;
-  color: inherit;
+  border-left: 4px solid transparent;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 140, 0, 0.85);
   text-align: left;
-  font-size: 1.15rem;
-  font-weight: 500;
+  font-size: 1.1rem;
+  font-weight: 600;
   cursor: pointer;
   text-decoration: none;
-  transition: all 150ms ease;
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-link::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 4px;
+  height: 100%;
+  background: #ff8c00;
+  transform: scaleY(0);
+  transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 0 2px 2px 0;
 }
 
 .nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.08);
-  border-left-color: rgba(255, 140, 0, 0.5);
+  background: rgba(255, 140, 0, 0.12);
+  color: #ff8c00;
+  transform: translateX(4px);
+  box-shadow: 0 4px 12px rgba(255, 140, 0, 0.15);
+}
+
+.nav-link:hover::before {
+  transform: scaleY(1);
+}
+
+.nav-link.active {
+  background: linear-gradient(90deg, rgba(255, 140, 0, 0.2), rgba(255, 140, 0, 0.05));
+  color: #ff8c00;
+  border-left-color: #ff8c00;
+  font-weight: 700;
+  box-shadow: 0 4px 16px rgba(255, 140, 0, 0.2);
+}
+
+.nav-link.active::before {
+  transform: scaleY(1);
+  background: #ff8c00;
 }
 
 

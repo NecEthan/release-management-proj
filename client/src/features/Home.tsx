@@ -34,7 +34,7 @@ export default function Home() {
           <div className="stat-value">{stats.releasesThisMonth}</div>
         </div>
         <div className="stat-card">
-          <div className="stat-label">Active Hotfixes</div>
+          <div className="stat-label">Number of Hotfixes this month</div>
           <div className="stat-value highlight">{stats.activeHotfixes}</div>
         </div>
       </div>

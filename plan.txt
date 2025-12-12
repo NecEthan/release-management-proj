@@ -1,0 +1,4 @@
+
+
+- webhook circleCi - everytime new deployment save to DB so know which release in which env
+- jira tickets/PRs - Jira api for each release to get related tickets/PRs
