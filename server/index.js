@@ -10,6 +10,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api/jira', jiraRoutes);
+app.use('/api/circleci', require('./routes/circleCIRoutes'));
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
