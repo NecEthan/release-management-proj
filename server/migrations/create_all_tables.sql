@@ -5,6 +5,13 @@ CREATE TABLE IF NOT EXISTS environments (
     last_deployed_at TIMESTAMP
 );
 
+INSERT INTO environments (name) VALUES 
+    ('Develop'),
+    ('Release'),
+    ('Release-Candidate'),
+    ('Master')
+ON CONFLICT (name) DO NOTHING;
+
 CREATE TABLE IF NOT EXISTS releases (
     id SERIAL PRIMARY KEY,
     version VARCHAR(50) NOT NULL UNIQUE,

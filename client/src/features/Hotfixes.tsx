@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import './Hotfixes.css';
+import PageHeader from '../components/page-header';
+import { API } from '../services/api';
 
 export default function Hotfixes() {
   const [selectedHotfix, setSelectedHotfix] = useState<any>(null)
@@ -100,8 +102,10 @@ export default function Hotfixes() {
 
   return (
     <div className="hotfixes">
-      <h1>Hotfixes</h1>
-      <p>Monitor and deploy emergency hotfixes</p>
+      <PageHeader title="Hotfixes"
+        description="Monitor and deploy emergency hotfixes"
+        onSync={API.getEnvironments}
+      />
 
       <div className="hotfixes-list">
         {hotfixes.map((hotfix) => (
