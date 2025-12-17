@@ -14,13 +14,12 @@
 
 .sidenav-title {
   font-size: 1.85rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
+  font-weight: 700;
+  letter-spacing: -0.01em;
   margin-bottom: 32px;
   padding-bottom: 16px;
   border-bottom: 2px solid rgba(255, 140, 0, 0.3);
   color: #ff8c00;
-  text-shadow: 0 2px 8px rgba(255, 140, 0, 0.3);
 }
 
 .sidenav-list {
@@ -70,10 +69,8 @@
 }
 
 .nav-link:hover {
-  background: rgba(255, 140, 0, 0.12);
+  background: rgba(255, 140, 0, 0.1);
   color: #ff8c00;
-  transform: translateX(4px);
-  box-shadow: 0 4px 12px rgba(255, 140, 0, 0.15);
 }
 
 .nav-link:hover::before {
@@ -81,11 +78,10 @@
 }
 
 .nav-link.active {
-  background: linear-gradient(90deg, rgba(255, 140, 0, 0.2), rgba(255, 140, 0, 0.05));
+  background: rgba(255, 140, 0, 0.15);
   color: #ff8c00;
   border-left-color: #ff8c00;
-  font-weight: 700;
-  box-shadow: 0 4px 16px rgba(255, 140, 0, 0.2);
+  font-weight: 600;
 }
 
 .nav-link.active::before {
