@@ -61,7 +61,8 @@ async function getGitHubCommitsForTicket(ticketKey) {
     });
 
     if (!response.ok) {
-        throw new Error(`GitHub API error: ${response.status} ${response.statusText}`);
+        console.warn(`GitHub API error for ${ticketKey}: ${response.status} ${response.statusText}`);
+        return [];
     }
 
     const data = await response.json();

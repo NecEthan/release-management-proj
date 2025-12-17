@@ -93,4 +93,39 @@ router.get('/environments', async (req, res) => {
     }
 });
 
+router.get('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        
+        const releaseResult = await pool.query(
+            `SELECT * FROM releases WHERE id = $1`,
+            [id]
+        );
+        
+        if (releaseResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Release not found' });
+        }
+        
+        const release = releaseResult.rows[0];
+        
+        const ticketsResult = await pool.query(
+            `SELECT * FROM jira_tickets WHERE release_id = $1 ORDER BY jira_key`,
+            [id]
+        );
+        
+        const prsResult = await pool.query(
+            `SELECT * FROM pull_requests WHERE release_id = $1 ORDER BY pr_number`,
+            [id]
+        );
+        
+        release.jiraTickets = ticketsResult.rows;
+        release.pullRequests = prsResult.rows;
+        
+        res.json({ release });
+    } catch (error) {
+        console.error('Error fetching release details:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 module.exports = router;
