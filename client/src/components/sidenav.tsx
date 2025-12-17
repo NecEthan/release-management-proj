@@ -1,5 +1,5 @@
 import './sidenav.css'
-type MenuKey = 'home' | 'environments' | 'releases' | 'hotfixes'
+type MenuKey = 'home' | 'environments' | 'releases' | 'deployments' | 'hotfixes'
 
 export default function Sidenav({
   selected,
@@ -12,6 +12,7 @@ export default function Sidenav({
     { key: 'home', label: 'Home' },
     { key: 'environments', label: 'Environments' },
     { key: 'releases', label: 'Releases' },
+    { key: 'deployments', label: 'Deployments' },
     { key: 'hotfixes', label: 'Hotfixes' },
   ]
 

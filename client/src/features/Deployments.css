@@ -1,0 +1,228 @@
+.deployments-container {
+    padding: 20px;
+}
+
+.deployments-header {
+    margin-bottom: 32px;
+}
+
+.deployments-header h1 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #f5f5f5;
+    margin: 0 0 8px 0;
+}
+
+.deployments-subtitle {
+    color: rgba(245, 245, 245, 0.7);
+    margin: 0;
+}
+
+.deployments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 1200px;
+}
+
+.deployment-card {
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    padding: 12px 16px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.deployment-card:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 140, 0, 0.3);
+}
+
+.deployment-main {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.deployment-environment {
+    padding: 4px 12px;
+    border-radius: 4px;
+    background-color: rgba(255, 140, 0, 0.15);
+    border: 1px solid rgba(255, 140, 0, 0.3);
+    color: #ff8c00;
+    font-weight: 600;
+    font-size: 0.8rem;
+    min-width: 120px;
+    text-align: center;
+}
+
+.deployment-info {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.deployment-version {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #ff8c00;
+    font-family: 'Courier New', monospace;
+}
+
+.deployment-branch,
+.deployment-commit {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: rgba(245, 245, 245, 0.7);
+    font-size: 0.8rem;
+}
+
+.deployment-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.deployment-stats {
+    display: flex;
+    gap: 16px;
+}
+
+.stat {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: rgba(245, 245, 245, 0.6);
+    font-size: 0.8rem;
+}
+
+.deployment-time {
+    color: rgba(245, 245, 245, 0.6);
+    font-size: 0.875rem;
+}
+
+.icon {
+    width: 1rem;
+    height: 1rem;
+}
+
+.error {
+    color: #ff6b6b;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Dialog Styles */
+.dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.dialog-content {
+    background-color: #1a1a1a;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+}
+
+.dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dialog-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #f5f5f5;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    color: rgba(245, 245, 245, 0.6);
+    font-size: 2rem;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s;
+}
+
+.close-button:hover {
+    color: #ff8c00;
+}
+
+.dialog-body {
+    padding: 24px;
+}
+
+.detail-section {
+    margin-bottom: 24px;
+}
+
+.detail-section:last-child {
+    margin-bottom: 0;
+}
+
+.detail-section h3 {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: rgba(245, 245, 245, 0.6);
+    margin: 0 0 8px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.detail-value {
+    font-size: 1rem;
+    color: #f5f5f5;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+}
+
+.environment-badge {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: rgba(255, 140, 0, 0.15);
+    border: 1px solid rgba(255, 140, 0, 0.3);
+    color: #ff8c00;
+    font-weight: 600;
+    width: fit-content;
+}
+
+.version-text {
+    font-family: 'Courier New', monospace;
+    font-weight: 700;
+    color: #ff8c00;
+}

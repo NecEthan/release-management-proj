@@ -1,16 +1,11 @@
-CREATE TABLE IF NOT EXISTS environments (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(50) NOT NULL UNIQUE,
-    current_version VARCHAR(50),
-    last_deployed_at TIMESTAMP
-);
+DROP TABLE IF EXISTS deployments CASCADE;
+DROP TABLE IF EXISTS hotfixes CASCADE;
+DROP TABLE IF EXISTS pull_requests CASCADE;
+DROP TABLE IF EXISTS jira_tickets CASCADE;
+DROP TABLE IF EXISTS commits CASCADE;
+DROP TABLE IF EXISTS releases CASCADE;
 
-INSERT INTO environments (name) VALUES 
-    ('Develop'),
-    ('Release'),
-    ('Release-Candidate'),
-    ('Master')
-ON CONFLICT (name) DO NOTHING;
+UPDATE environments SET current_version = NULL, last_deployed_at = NULL;
 
 CREATE TABLE IF NOT EXISTS releases (
     id SERIAL PRIMARY KEY,
@@ -39,7 +34,8 @@ CREATE TABLE IF NOT EXISTS pull_requests (
     url VARCHAR(500),
     author VARCHAR(100),
     merged_at TIMESTAMP,
-    release_id INT REFERENCES releases(id) ON DELETE CASCADE
+    release_id INT REFERENCES releases(id) ON DELETE CASCADE,
+    UNIQUE(pr_number, release_id)
 );
 
 CREATE TABLE IF NOT EXISTS jira_tickets (
@@ -48,7 +44,8 @@ CREATE TABLE IF NOT EXISTS jira_tickets (
     summary TEXT,
     url VARCHAR(500),
     status VARCHAR(50),
-    release_id INT REFERENCES releases(id) ON DELETE CASCADE
+    release_id INT REFERENCES releases(id) ON DELETE CASCADE,
+    UNIQUE(jira_key, release_id)
 );
 
 CREATE TABLE IF NOT EXISTS hotfixes (
@@ -71,20 +68,13 @@ CREATE TABLE IF NOT EXISTS deployments (
     commit_sha VARCHAR(100)
 );
 
-CREATE INDEX idx_releases_version ON releases(version);
-CREATE INDEX idx_releases_environment ON releases(environment_id);
-CREATE INDEX idx_commits_release ON commits(release_id);
-CREATE INDEX idx_commits_hash ON commits(commit_hash);
-CREATE INDEX idx_prs_release ON pull_requests(release_id);
-CREATE INDEX idx_jira_release ON jira_tickets(release_id);
-CREATE INDEX idx_jira_key ON jira_tickets(jira_key);
-CREATE INDEX idx_hotfixes_release ON hotfixes(release_id);
-CREATE INDEX idx_deployments_environment ON deployments(environment_id);
-CREATE INDEX idx_deployments_release ON deployments(release_id);
-
-INSERT INTO environments (name) VALUES 
-    ('Production'),
-    ('Pre-Production'),
-    ('Testing'),
-    ('Stable')
-ON CONFLICT (name) DO NOTHING;
+CREATE INDEX IF NOT EXISTS idx_releases_version ON releases(version);
+CREATE INDEX IF NOT EXISTS idx_releases_environment ON releases(environment_id);
+CREATE INDEX IF NOT EXISTS idx_commits_release ON commits(release_id);
+CREATE INDEX IF NOT EXISTS idx_commits_hash ON commits(commit_hash);
+CREATE INDEX IF NOT EXISTS idx_prs_release ON pull_requests(release_id);
+CREATE INDEX IF NOT EXISTS idx_jira_release ON jira_tickets(release_id);
+CREATE INDEX IF NOT EXISTS idx_jira_key ON jira_tickets(jira_key);
+CREATE INDEX IF NOT EXISTS idx_hotfixes_release ON hotfixes(release_id);
+CREATE INDEX IF NOT EXISTS idx_deployments_environment ON deployments(environment_id);
+CREATE INDEX IF NOT EXISTS idx_deployments_release ON deployments(release_id);

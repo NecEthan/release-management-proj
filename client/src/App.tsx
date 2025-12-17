@@ -3,6 +3,7 @@ import Sidenav from './components/sidenav'
 import Home from './features/Home'
 import Environments from './features/Environments'
 import Releases from './features/Releases'
+import Deployments from './features/Deployments'
 import Hotfixes from './features/Hotfixes'
 import MainContent from './components/main-content'
 import MenuKey from './types/menu-key.type'
@@ -16,6 +17,7 @@ export default function App() {
       case 'home': return <Home />
       case 'environments': return <Environments />
       case 'releases': return <Releases />
+      case 'deployments': return <Deployments />
       case 'hotfixes': return <Hotfixes />
     }
   }

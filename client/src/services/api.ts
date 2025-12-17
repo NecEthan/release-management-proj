@@ -33,5 +33,21 @@ export const API = {
             throw new Error('Failed to fetch release details');
         }
         return response.json();
+    },
+
+    async getDeployments() {
+        const response = await fetch(`${API_BASE_URL}/deployments`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch deployments');
+        }
+        return response.json();
+    },
+
+    async getDeploymentDetails(id: number) {
+        const response = await fetch(`${API_BASE_URL}/deployments/${id}`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch deployment details');
+        }
+        return response.json();
     }
 }

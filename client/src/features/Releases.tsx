@@ -51,7 +51,6 @@ export default function Releases() {
   return (
     <div className="releases">
       <PageHeader title="Releases" description="Track and manage all releases" onSync={fetchReleases} />
-
       <div className="releases-list">
         {releases.map((release) => (
           <div

@@ -13,6 +13,7 @@ app.use(express.json());
 app.use('/api/jira', jiraRoutes);
 app.use('/api/releases', releaseRoutes);
 app.use('/api/circleci', require('./routes/circleCIRoutes'));
+app.use('/api/deployments', require('./routes/deploymentRoutes'));
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

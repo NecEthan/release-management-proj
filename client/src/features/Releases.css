@@ -67,7 +67,6 @@
 }
 
 
-/* Tabs */
 .dialog-tabs {
   display: flex;
   gap: 8px;
@@ -115,7 +114,6 @@
   font-size: 1.1rem;
 }
 
-/* Tickets List */
 .tickets-list {
   display: flex;
   flex-direction: column;
@@ -170,7 +168,6 @@
   color: #2196f3;
 }
 
-/* Pull Requests List */
 .prs-list {
   display: flex;
   flex-direction: column;
@@ -212,7 +209,6 @@
   flex-shrink: 0;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
   .ticket-item,
   .pr-item {

@@ -14,11 +14,7 @@ async function syncExistingReleases() {
         );
         
         for (const release of releasesResult.rows) {
-            console.log(`\n📦 Release: ${release.version} (ID: ${release.id})`);
-            console.log(`   Current tickets: ${release.ticket_count}`);
-            
             if (release.ticket_count > 0) {
-                console.log('   ⏭️  Already has tickets, skipping...');
                 continue;
             }
             
@@ -39,7 +35,6 @@ async function syncExistingReleases() {
                     
                     if (result.rows.length > 0) {
                         ticketCount++;
-                        console.log(`      - ${ticket.key}: ${ticket.summary}`);
                     }
                     
                     for (const pr of ticket.pullRequests) {

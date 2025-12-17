@@ -43,10 +43,10 @@ function mapWorkflowToEnvironment(workflowName, branch) {
     const name = workflowName.toLowerCase();
     const branchName = branch.toLowerCase();
     
-    if (name === 'testing') return 'Release-Candidate';
+    if (name === 'testing') return 'Release';
     if (name === 'development' || branchName === 'develop') return 'Develop';
-    if (name === 'release' || branchName === 'release') return 'Release';
-    if (name === 'master' || branchName === 'master') return 'Master';
+    if (name === 'preprod' || branchName === 'release-candidate') return 'Release-candidate';
+    if (name === 'production' || branchName === 'master') return 'Master';
     
     return 'Develop';
 }
@@ -55,19 +55,17 @@ async function pollDeployments() {
     const deployments = [];
     
     try {
-        console.log('📡 Polling CircleCI for recent deployments...');
         const { items: pipelines } = await circleCIService.getEnvironmentVersions();
-        console.log(`Found ${pipelines.length} pipelines to check\n`);
+        
+        if (pipelines.length > 0) {
+            const mostRecent = pipelines[0];
+        }
         
         for (const pipeline of pipelines.slice(0, 50)) {
             const workflows = await getWorkflowsForPipeline(pipeline.id);
             
             for (const workflow of workflows) {
                 if (workflow.status === 'success') {
-                    console.log(`\n🔍 Found successful workflow: ${workflow.name} on ${pipeline.vcs.branch}`);
-                    console.log(`   Pipeline #${pipeline.number} | Commit: ${pipeline.vcs.revision.substring(0, 7)}`);
-                    console.log(`   Message: "${pipeline.vcs.commit?.subject || 'N/A'}"`);
-                    
                     const deployment = await processDeployment(pipeline, workflow);
                     if (deployment) {
                         deployments.push(deployment);
@@ -76,7 +74,6 @@ async function pollDeployments() {
             }
         }
         
-        console.log(`\n✅ Polling completed - Processed ${deployments.length} new deployments\n`);
         return deployments;
     } catch (error) {
         console.error('Error polling CircleCI:', error.message);
@@ -97,42 +94,33 @@ async function processDeployment(pipeline, workflow) {
                 );
                 version = devVersion.rows[0]?.current_version;
                 if (!version) {
-                    console.log(`   ⚠️ Develop has no version, skipping`);
                     return null;
                 }
-                console.log(`   ↪️  Cascading from Develop (commit mentions 'develop' → 'release')`);
             } else if (environmentName === 'Release') {
                 const devVersion = await pool.query(
                     `SELECT current_version FROM environments WHERE name = 'Develop'`
                 );
                 version = devVersion.rows[0]?.current_version;
                 if (!version) {
-                    console.log(`   ⚠️ Develop has no version, skipping release deployment`);
                     return null;
                 }
-                console.log(`   Version: ${version} (cascaded from Develop)`);
             } else if (environmentName === 'Release-Candidate') {
                 const releaseVersion = await pool.query(
                     `SELECT current_version FROM environments WHERE name = 'Release'`
                 );
                 version = releaseVersion.rows[0]?.current_version;
                 if (!version) {
-                    console.log(`   ⚠️ Release has no version, skipping release-candidate deployment`);
                     return null;
                 }
-                console.log(`   Version: ${version} (cascaded from Release)`);
             } else if (environmentName === 'Master') {
                 const rcVersion = await pool.query(
                     `SELECT current_version FROM environments WHERE name = 'Release-Candidate'`
                 );
                 version = rcVersion.rows[0]?.current_version;
                 if (!version) {
-                    console.log(`   ⚠️ Release-Candidate has no version, skipping master deployment`);
                     return null;
                 }
-                console.log(`   Version: ${version} (cascaded from Release-Candidate)`);
             } else {
-                console.log(`   ⚠️ No version found in commit for ${environmentName}, skipping`);
                 return null;
             }
         }
@@ -163,32 +151,51 @@ async function processDeployment(pipeline, workflow) {
                 [version]
             );
             releaseId = newRelease.rows[0].id;
-            
-            try {
-                const { tickets } = await jiraService.getJiraTicketsForRelease(version);
-                
-                for (const ticket of tickets) {
-                    await pool.query(
-                        `INSERT INTO jira_tickets (jira_key, summary, url, status, release_id)
-                         VALUES ($1, $2, $3, $4, $5)
-                         ON CONFLICT DO NOTHING`,
-                        [ticket.key, ticket.summary, ticket.url, ticket.status, releaseId]
-                    );
-                    
-                    for (const pr of ticket.pullRequests) {
-                        await pool.query(
-                            `INSERT INTO pull_requests (pr_number, title, url, author, release_id)
-                             VALUES ($1, $2, $3, $4, $5)
-                             ON CONFLICT DO NOTHING`,
-                            [pr.number, pr.title, pr.url, pr.author, releaseId]
-                        );
-                    }
-                }
-            } catch (error) {
-                console.error(`   ❌ Failed to fetch Jira tickets: ${error.message}`);
-            }
         } else {
             releaseId = releaseResult.rows[0].id;
+        }
+        
+        try {
+            const jiraVersion = `${version} (YOT)`;
+            const { tickets } = await jiraService.getJiraTicketsForRelease(jiraVersion);
+            
+            let ticketCount = 0;
+            let prCount = 0;
+            
+            for (const ticket of tickets) {
+                const result = await pool.query(
+                    `INSERT INTO jira_tickets (jira_key, summary, url, status, release_id)
+                     VALUES ($1, $2, $3, $4, $5)
+                     ON CONFLICT (jira_key, release_id) 
+                     DO UPDATE SET 
+                         status = EXCLUDED.status,
+                         summary = EXCLUDED.summary,
+                         url = EXCLUDED.url
+                     RETURNING id`,
+                    [ticket.key, ticket.summary, ticket.url, ticket.status, releaseId]
+                );
+                
+                if (result.rows.length > 0) ticketCount++;
+                
+                for (const pr of ticket.pullRequests) {
+                    const prResult = await pool.query(
+                        `INSERT INTO pull_requests (pr_number, title, url, author, release_id)
+                         VALUES ($1, $2, $3, $4, $5)
+                         ON CONFLICT (pr_number, release_id) 
+                         DO UPDATE SET 
+                             title = EXCLUDED.title,
+                             url = EXCLUDED.url,
+                             author = EXCLUDED.author
+                         RETURNING id`,
+                        [pr.number, pr.title, pr.url, pr.author, releaseId]
+                    );
+                    
+                    if (prResult.rows.length > 0) prCount++;
+                }
+            }
+            
+        } catch (error) {
+            console.error(`   ❌ Failed to fetch Jira tickets: ${error.message}`);
         }
         
         const envResult = await pool.query(
