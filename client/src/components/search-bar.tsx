@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { SearchBarProps } from "../types/search-bar-props.type";
-
-
+import "./search-bar.css";
 
 export default function SearchBar({
     onSearch,

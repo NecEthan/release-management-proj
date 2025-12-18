@@ -22,6 +22,7 @@ export default function Deployments() {
             setLoading(true);
             const data = await API.getDeployments();
             setDeployments(data.deployments);
+            setFilteredDeployments(data.deployments);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to fetch deployments');
         } finally {
@@ -58,17 +59,17 @@ export default function Deployments() {
     };
 
     const handleSearch = (query: string) => {
-    if (!query.trim()) {
-      setFilteredDeployments(deployments)
-    }
+        if (!query.trim()) {
+            setFilteredDeployments(deployments);
+            return;
+        }
 
-    const filtered = deployments.filter(deployment => 
-    deployment.release_version.toLowerCase().includes(query.toLowerCase()) ||
-    deployment.environment.toLowerCase().includes(query.toLowerCase()) ||
-    deployment.branch.toLowerCase().includes(query.toLowerCase())
-    );
-    setFilteredDeployments(filtered)
-  }
+        const filtered = deployments.filter(deployment => 
+            deployment.release_version.toLowerCase().includes(query.toLowerCase()) ||
+            deployment.environment.toLowerCase().includes(query.toLowerCase())
+        );
+        setFilteredDeployments(filtered);
+    }
 
     if (loading) {
         return <div className="deployments-container">Loading deployments...</div>;
@@ -84,10 +85,16 @@ export default function Deployments() {
                 <h1>Recent Deployments</h1>
                 <p className="deployments-subtitle">Latest {deployments.length} deployments from CircleCI</p>
             </div>
-      <SearchBar onSearch={handleSearch} placeholder="Search releases..." />
+            
+            <SearchBar 
+                onSearch={handleSearch} 
+                placeholder="Search deployments by version or environment..."
+                showResults={true}
+                resultCount={filteredDeployments.length}
+            />
 
             <div className="deployments-list">
-                {deployments.map((deployment) => (
+                {filteredDeployments.map((deployment) => (
                     <div key={deployment.id} className="deployment-card" onClick={() => handleDeploymentClick(deployment)}>
                         <div className="deployment-main">
                             <div className="deployment-environment">

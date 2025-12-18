@@ -1,0 +1,94 @@
+.search-bar-container {
+  margin-bottom: 32px;
+  max-width: 100%;
+}
+
+.search-bar-input-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 700px;
+}
+
+.search-bar-input-wrapper::before {
+  content: '';
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2rem;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.search-bar-input {
+  width: 100%;
+  padding: 20px 20px;
+  background: linear-gradient(135deg, rgba(10, 42, 102, 0.4), rgba(6, 26, 68, 0.4));
+  border: 2px solid rgba(255, 140, 0, 0.3);
+  border-radius: 12px;
+  color: #ffffff;
+  font-size: 1.05rem;
+  font-weight: 400;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.search-bar-input:focus {
+  outline: none;
+  border-color: #ff8c00;
+  background: linear-gradient(135deg, rgba(10, 42, 102, 0.6), rgba(6, 26, 68, 0.6));
+  box-shadow: 0 0 0 4px rgba(255, 140, 0, 0.15), 0 4px 12px rgba(0, 0, 0, 0.3);
+  transform: translateY(-1px);
+}
+
+.search-bar-input::placeholder {
+  color: rgba(245, 245, 245, 0.5);
+  font-weight: 400;
+  font-style: italic;
+}
+
+.search-bar-clear {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: linear-gradient(135deg, rgba(255, 140, 0, 0.25), rgba(255, 140, 0, 0.15));
+  border: 1px solid rgba(255, 140, 0, 0.4);
+  color: #ff8c00;
+  font-size: 1.4rem;
+  cursor: pointer;
+  padding: 6px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.search-bar-clear:hover {
+  background: linear-gradient(135deg, rgba(255, 140, 0, 0.4), rgba(255, 140, 0, 0.25));
+  transform: translateY(-50%) scale(1.08);
+  box-shadow: 0 3px 8px rgba(255, 140, 0, 0.3);
+  border-color: #ff8c00;
+}
+
+.search-bar-clear:active {
+  transform: translateY(-50%) scale(0.95);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.search-bar-results {
+  color: rgba(255, 140, 0, 0.85);
+  font-size: 0.95rem;
+  margin-top: 12px;
+  margin-bottom: 0;
+  font-weight: 600;
+  padding-left: 6px;
+  letter-spacing: 0.3px;
+}
