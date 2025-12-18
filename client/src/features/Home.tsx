@@ -1,3 +1,5 @@
+import MainContent from '../components/main-content'
+import PageHeader from '../components/page-header'
 import './Home.css'
 
 export default function Home() {
@@ -17,8 +19,7 @@ export default function Home() {
 
   return (
     <div className="home">
-      <h1>Dashboard</h1>
-      <p>Welcome to the Release Management System</p>
+      <PageHeader title="Overview" description="Key statistics and recent releases" />
 
       <div className="stats-container">
         <div className="stat-card">

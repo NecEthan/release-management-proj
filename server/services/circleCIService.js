@@ -5,7 +5,7 @@ async function getEnvironmentVersions() {
     const projectSlug = process.env.CIRCLECI_PROJECT_SLUG;
 
     if (!token || !projectSlug) {
-        throw new Error('CircleCI configuration missing: CIRCLECI_TOKEN or CIRCLECI_PROJECT_SLUG not set');
+        throw new Error('no environment variables');
     }
 
     const url = `https://circleci.com/api/v2/project/${projectSlug}/pipeline`;

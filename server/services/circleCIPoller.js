@@ -56,14 +56,8 @@ async function pollDeployments() {
     
     try {
         const { items: pipelines } = await circleCIService.getEnvironmentVersions();
-        
-        if (pipelines.length > 0) {
-            const mostRecent = pipelines[0];
-        }
-        
-        for (const pipeline of pipelines.slice(0, 50)) {
+        for (const pipeline of pipelines) {
             const workflows = await getWorkflowsForPipeline(pipeline.id);
-            
             for (const workflow of workflows) {
                 if (workflow.status === 'success') {
                     const deployment = await processDeployment(pipeline, workflow);

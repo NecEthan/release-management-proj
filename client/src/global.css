@@ -7,6 +7,8 @@
 
 * {
   box-sizing: border-box;
+  cursor: default;
+  user-select: none;
 }
 
 html, body, #root {
@@ -23,6 +25,22 @@ body {
 
 a {
   text-decoration: none;
+}
+
+select {
+  caret-color: transparent;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+input, textarea {
+  cursor: text;
+  user-select: text;
+}
+
+a, button {
+  cursor: pointer;
 }
 
 .container {
