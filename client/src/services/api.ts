@@ -11,8 +11,8 @@ export const API = {
         return response.json();
     },
 
-    async getEnvironments() {
-        const response = await fetch(`${API_BASE_URL}/releases/environments`);
+    async getEnvironments(currentProject: string) {
+        const response = await fetch(`${API_BASE_URL}/releases/environments?project=${currentProject}`);
         if (!response.ok) {
             throw new Error('Failed to fetch environments');
         }
@@ -35,8 +35,8 @@ export const API = {
         return response.json();
     },
 
-    async getDeployments() {
-        const response = await fetch(`${API_BASE_URL}/deployments`);
+    async getDeployments(currentProject: string) {
+        const response = await fetch(`${API_BASE_URL}/deployments?project=${currentProject}`);
         if (!response.ok) {
             throw new Error('Failed to fetch deployments');
         }

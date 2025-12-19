@@ -209,6 +209,14 @@
   flex-shrink: 0;
 }
 
+.no-data-message {
+  text-align: center;
+  padding: 40px;
+  color: rgba(245, 245, 245, 0.5);
+  font-size: 1rem;
+  width: 100%;
+}
+
 @media (max-width: 768px) {
   .ticket-item,
   .pr-item {

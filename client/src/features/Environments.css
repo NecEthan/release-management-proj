@@ -49,6 +49,14 @@
   margin-bottom: 16px;
 }
 
+.no-data-message {
+  text-align: center;
+  padding: 40px;
+  color: rgba(245, 245, 245, 0.5);
+  font-size: 1rem;
+  width: 100%;
+}
+
 .env-deployed {
   display: flex;
   flex-direction: column;

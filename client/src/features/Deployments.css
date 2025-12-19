@@ -120,6 +120,14 @@
     text-align: center;
 }
 
+.no-data-message {
+    text-align: center;
+    padding: 40px;
+    color: rgba(245, 245, 245, 0.5);
+    font-size: 1rem;
+    width: 100%;
+}
+
 /* Dialog Styles */
 .dialog-overlay {
     position: fixed;

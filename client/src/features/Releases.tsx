@@ -37,7 +37,7 @@ export default function Releases() {
 
   const handleReleaseClick = async (release: Release) => {
     try {
-      const data = await API.getReleaseDetails(release.id, currentProject)
+      const data = await API.getReleaseDetails(release.id)
       setSelectedRelease(data.release)
     } catch (error) {
       console.error('Error fetching release details:', error)
@@ -54,7 +54,12 @@ export default function Releases() {
     <div className="releases">
       <PageHeader title="Releases" description="Track and manage all releases" onSync={fetchReleases} />
       <div className="releases-list">
-        {releases.map((release) => (
+        {releases.length === 0 ? (
+          <div className="no-data-message">
+            No releases found for this project
+          </div>
+        ) : (
+          releases.map((release) => (
           <div
             key={release.id}
             className="release-item"
@@ -70,7 +75,8 @@ export default function Releases() {
               <span>{release.pr_count ? parseInt(release.pr_count) : 0} Pull Requests</span>
             </div>
           </div>
-        ))}
+          ))
+        )}
       </div>
 
       {selectedRelease && (

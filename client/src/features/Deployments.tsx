@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { API } from '../services/api';
 import { Deployment } from '../types/deployment.type';
 import './Deployments.css';
 import SearchBar from '../components/search-bar';
+import { useProject } from '../contexts/ProjectContext';
 
 export default function Deployments() {
     const [deployments, setDeployments] = useState<Deployment[]>([]);
@@ -11,16 +12,16 @@ export default function Deployments() {
     const [error, setError] = useState<string | null>(null);
     const [selectedDeployment, setSelectedDeployment] = useState<Deployment | null>(null);
 
+    const project = useProject();
+
     useEffect(() => {
         fetchDeployments();
-    }, []);
-
-
+    }, [project.currentProject]);
 
     const fetchDeployments = async () => {
         try {
             setLoading(true);
-            const data = await API.getDeployments();
+            const data = await API.getDeployments(project.currentProject);
             setDeployments(data.deployments);
             setFilteredDeployments(data.deployments);
         } catch (err) {
@@ -94,7 +95,12 @@ export default function Deployments() {
             />
 
             <div className="deployments-list">
-                {filteredDeployments.map((deployment) => (
+                {filteredDeployments.length === 0 ? (
+                    <div className="no-data-message">
+                        No deployments found for this project
+                    </div>
+                ) : (
+                    filteredDeployments.map((deployment) => (
                     <div key={deployment.id} className="deployment-card" onClick={() => handleDeploymentClick(deployment)}>
                         <div className="deployment-main">
                             <div className="deployment-environment">
@@ -120,7 +126,8 @@ export default function Deployments() {
                             <div className="deployment-time">{formatDate(deployment.deployed_at)}</div>
                         </div>
                     </div>
-                ))}
+                    ))
+                )}
             </div>
 
             {selectedDeployment && (

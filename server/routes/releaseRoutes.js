@@ -87,8 +87,10 @@ router.get('/', async (req, res) => {
 
 router.get('/environments', async (req, res) => {
     try {
+        const { project = 'YOT' } = req.query;
         const result = await pool.query(
-            `SELECT * FROM environments ORDER BY id`
+            `SELECT * FROM environments WHERE project = $1 ORDER BY id`,
+            [project]
         );
         res.json({ environments: result.rows });
     } catch (error) {
@@ -100,10 +102,11 @@ router.get('/environments', async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
+        const { project = 'YOT' } = req.query;
         
         const releaseResult = await pool.query(
-            `SELECT * FROM releases WHERE id = $1`,
-            [id]
+            `SELECT * FROM releases WHERE id = $1 AND project = $2`,
+            [id, project]
         );
         
         if (releaseResult.rows.length === 0) {
@@ -113,13 +116,13 @@ router.get('/:id', async (req, res) => {
         const release = releaseResult.rows[0];
         
         const ticketsResult = await pool.query(
-            `SELECT * FROM jira_tickets WHERE release_id = $1 ORDER BY jira_key`,
-            [id]
+            `SELECT * FROM jira_tickets WHERE release_id = $1 AND project = $2 ORDER BY jira_key`,
+            [id, project]
         );
         
         const prsResult = await pool.query(
-            `SELECT * FROM pull_requests WHERE release_id = $1 ORDER BY pr_number`,
-            [id]
+            `SELECT * FROM pull_requests WHERE release_id = $1 AND project = $2 ORDER BY pr_number`,
+            [id, project]
         );
         
         release.jiraTickets = ticketsResult.rows;

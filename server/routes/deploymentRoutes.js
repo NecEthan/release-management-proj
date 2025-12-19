@@ -4,6 +4,7 @@ const pool = require('../db');
 
 router.get('/', async (req, res) => {
     try {
+        const { project = 'YOT' } = req.query;
         const result = await pool.query(
             `SELECT 
                 d.id,
@@ -14,9 +15,11 @@ router.get('/', async (req, res) => {
                 r.version as release_version
              FROM deployments d
              JOIN environments e ON d.environment_id = e.id
-             LEFT JOIN releases r ON d.release_id = r.id
+             LEFT JOIN releases r ON d.release_id = r.id AND r.project = $1
+             WHERE d.project = $1
              ORDER BY d.deployed_at DESC
-             LIMIT 50`
+             LIMIT 50`,
+            [project]
         );
         
         res.json({ 
@@ -32,6 +35,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
+        const { project = 'YOT' } = req.query;
         
         const deploymentResult = await pool.query(
             `SELECT 
@@ -48,9 +52,9 @@ router.get('/:id', async (req, res) => {
                 r.release_date
              FROM deployments d
              JOIN environments e ON d.environment_id = e.id
-             LEFT JOIN releases r ON d.release_id = r.id
-             WHERE d.id = $1`,
-            [id]
+             LEFT JOIN releases r ON d.release_id = r.id AND r.project = $1
+             WHERE d.id = $2 AND d.project = $1`,
+            [project, id]
         );
         
         if (deploymentResult.rows.length === 0) {
@@ -61,13 +65,13 @@ router.get('/:id', async (req, res) => {
         
         if (deployment.release_id) {
             const ticketsResult = await pool.query(
-                `SELECT * FROM jira_tickets WHERE release_id = $1 ORDER BY jira_key`,
-                [deployment.release_id]
+                `SELECT * FROM jira_tickets WHERE release_id = $1 AND project = $2 ORDER BY jira_key`,
+                [deployment.release_id, project]
             );
             
             const prsResult = await pool.query(
-                `SELECT * FROM pull_requests WHERE release_id = $1 ORDER BY pr_number`,
-                [deployment.release_id]
+                `SELECT * FROM pull_requests WHERE release_id = $1 AND project = $2 ORDER BY pr_number`,
+                [deployment.release_id, project]
             );
             
             deployment.jiraTickets = ticketsResult.rows;

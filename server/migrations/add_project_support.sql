@@ -3,12 +3,16 @@ ALTER TABLE releases ADD COLUMN IF NOT EXISTS project VARCHAR(50) DEFAULT 'YOT';
 ALTER TABLE jira_tickets ADD COLUMN IF NOT EXISTS project VARCHAR(50) DEFAULT 'YOT';
 ALTER TABLE pull_requests ADD COLUMN IF NOT EXISTS project VARCHAR(50) DEFAULT 'YOT';
 ALTER TABLE hotfixes ADD COLUMN IF NOT EXISTS project VARCHAR(50) DEFAULT 'YOT';
+ALTER TABLE deployments ADD COLUMN IF NOT EXISTS project VARCHAR(50) DEFAULT 'YOT';
+ALTER TABLE environments ADD COLUMN IF NOT EXISTS project VARCHAR(50) DEFAULT 'YOT';
 
 -- Add indexes for performance
 CREATE INDEX IF NOT EXISTS idx_releases_project ON releases(project);
 CREATE INDEX IF NOT EXISTS idx_jira_tickets_project ON jira_tickets(project);
 CREATE INDEX IF NOT EXISTS idx_pull_requests_project ON pull_requests(project);
 CREATE INDEX IF NOT EXISTS idx_hotfixes_project ON hotfixes(project);
+CREATE INDEX IF NOT EXISTS idx_deployments_project ON deployments(project);
+CREATE INDEX IF NOT EXISTS idx_environments_project ON environments(project);
 
 -- Update unique constraints to include project
 ALTER TABLE jira_tickets DROP CONSTRAINT IF EXISTS jira_tickets_jira_key_release_id_key;

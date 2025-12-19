@@ -89,4 +89,118 @@
   background: #ff8c00;
 }
 
+.project-selector {
+  margin-bottom: 24px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(255, 140, 0, 0.2);
+}
+
+.project-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: rgba(255, 140, 0, 0.7);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.custom-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.dropdown-trigger {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 11px 18px;
+  background: linear-gradient(135deg, rgba(10, 42, 102, 0.4), rgba(6, 26, 68, 0.4));
+  border: 2px solid rgba(255, 140, 0, 0.25);
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.dropdown-trigger:hover {
+  background: linear-gradient(135deg, rgba(10, 42, 102, 0.6), rgba(6, 26, 68, 0.6));
+  border-color: rgba(255, 140, 0, 0.5);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(255, 140, 0, 0.25);
+}
+
+.dropdown-arrow {
+  transition: transform 0.3s ease;
+}
+
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  background: linear-gradient(135deg, #0a2a66 0%, #061a44 100%);
+  border: 2px solid rgba(255, 140, 0, 0.3);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 140, 0, 0.1);
+  overflow: hidden;
+  z-index: 1000;
+  animation: dropdownSlide 0.25s ease;
+}
+
+@keyframes dropdownSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  color: #e8e8e8;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid rgba(255, 140, 0, 0.1);
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-item:hover {
+  background: linear-gradient(90deg, rgba(255, 140, 0, 0.2), rgba(255, 140, 0, 0.1));
+  color: #ff8c00;
+  font-weight: 600;
+  padding-left: 22px;
+}
+
+.dropdown-item.selected {
+  background: linear-gradient(90deg, rgba(255, 140, 0, 0.25), rgba(255, 140, 0, 0.15));
+  color: #ff8c00;
+  font-weight: 700;
+}
+
+.dropdown-item svg {
+  stroke: #ff8c00;
+  stroke-width: 2;
+  fill: none;
+}
 
