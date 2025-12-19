@@ -60,15 +60,19 @@ router.post('/', async (req, res) => {
 
 router.get('/', async (req, res) => {
     try {
+        const { project = 'YOT' } = req.query;
+
         const result = await pool.query(
             `SELECT r.*, 
                     COUNT(DISTINCT jt.id) as ticket_count,
                     COUNT(DISTINCT pr.id) as pr_count
              FROM releases r
-             LEFT JOIN jira_tickets jt ON jt.release_id = r.id
-             LEFT JOIN pull_requests pr ON pr.release_id = r.id
+             LEFT JOIN jira_tickets jt ON jt.release_id = r.id AND jt.project = $1
+            LEFT JOIN pull_requests pr ON pr.release_id = r.id AND pr.project = $1
+             WHERE r.project = $1
              GROUP BY r.id
-             ORDER BY r.created_at DESC`
+             ORDER BY r.created_at DESC`,
+             [project]
         );
         
         res.json({ 

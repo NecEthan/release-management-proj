@@ -1,16 +1,18 @@
 import { useState, useRef, useEffect } from "react";
 import './page-header.css';
 import { PageHeaderProps } from "../types/page-header-props.type";
+import { useProject } from "../contexts/ProjectContext";
 
 const projects = [
-    { value: 'yot', label: 'YOT' },
-    { value: 'mm', label: 'MM' }
+    { value: 'YOT', label: 'YOT' },
+    { value: 'MM', label: 'MM' }
 ];
 
 export default function PageHeader({ title, description, onSync }: PageHeaderProps) {
     const [syncing, setSyncing] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
-    const [selectedProject, setSelectedProject] = useState(projects.find(p => p.value === 'yot') || projects[0]);
+const { currentProject, setCurrentProject } = useProject();
+const selectedProject = projects.find(p => p.value === currentProject) || projects[0];
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     const handleSync = async () => {
@@ -27,7 +29,7 @@ export default function PageHeader({ title, description, onSync }: PageHeaderPro
     };
 
     const handleSelect = (project: typeof projects[0]) => {
-        setSelectedProject(project);
+        setCurrentProject(project.value);
         setIsOpen(false);
     };
 

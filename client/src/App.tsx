@@ -7,7 +7,7 @@ import Deployments from './features/Deployments'
 import Hotfixes from './features/Hotfixes'
 import MainContent from './components/main-content'
 import MenuKey from './types/menu-key.type'
-
+import { ProjectProvider } from './contexts/ProjectContext';
 
 export default function App() {
   const [selected, setSelected] = useState<MenuKey>('home');
@@ -23,11 +23,13 @@ export default function App() {
   }
 
   return (
-    <div className='container'>
-      <Sidenav selected={selected} onSelect={setSelected} />
-      <MainContent>
-        {renderContent()}
-      </MainContent>
-    </div>
+    <ProjectProvider>
+      <div className='container'>
+        <Sidenav selected={selected} onSelect={setSelected} />
+        <MainContent>
+          {renderContent()}
+        </MainContent>
+      </div>
+    </ProjectProvider>
   )
 }

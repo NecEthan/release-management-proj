@@ -2,14 +2,13 @@
 
 async function getEnvironmentVersions() {
     const token = process.env.CIRCLECI_TOKEN;
-    const projectSlug = process.env.CIRCLECI_PROJECT_SLUG;
+    const projectSlugYot = process.env.CIRCLECI_PROJECT_SLUG_YOT;
 
-    if (!token || !projectSlug) {
+    if (!token || !projectSlugYot) {
         throw new Error('no environment variables');
     }
 
-    const url = `https://circleci.com/api/v2/project/${projectSlug}/pipeline`;
-
+    const url = `https://circleci.com/api/v2/project/${projectSlugYot}/pipeline`;
     const response = await fetch(url, {
         headers: {
             'Circle-Token': token,

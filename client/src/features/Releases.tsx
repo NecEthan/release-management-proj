@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import './Releases.css'
 import PageHeader from '../components/page-header'
 import { API } from '../services/api'
+import { useProject } from '../contexts/ProjectContext'
 
 type Release = {
   id: number;
@@ -17,14 +18,15 @@ export default function Releases() {
   const [loading, setLoading] = useState(true)
   const [selectedRelease, setSelectedRelease] = useState<any>(null)
   const [activeTab, setActiveTab] = useState<'jira' | 'prs'>('jira')
+  const { currentProject } = useProject();
 
   useEffect(() => {
     fetchReleases()
-  }, [])
+  }, [currentProject])
 
   const fetchReleases = async () => {
     try {
-      const data = await API.getReleases()
+      const data = await API.getReleases(currentProject)
       setReleases(data.releases)
     } catch (error) {
       console.error('Error fetching releases:', error)
@@ -35,7 +37,7 @@ export default function Releases() {
 
   const handleReleaseClick = async (release: Release) => {
     try {
-      const data = await API.getReleaseDetails(release.id)
+      const data = await API.getReleaseDetails(release.id, currentProject)
       setSelectedRelease(data.release)
     } catch (error) {
       console.error('Error fetching release details:', error)

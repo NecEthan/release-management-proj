@@ -45,13 +45,13 @@ async function getJiraTicketsForRelease(version) {
 async function getGitHubCommitsForTicket(ticketKey) {
     const githubToken = process.env.GITHUB_TOKEN;
     const githubOrg = process.env.GITHUB_ORG;
-    const githubRepo = process.env.GITHUB_REPO;
+    const githubRepoYot = process.env.GITHUB_REPO_YOT;
 
-    if (!githubToken || !githubOrg || !githubRepo) {
+    if (!githubToken || !githubOrg || !githubRepoYot) {
         throw new Error('GitHub configuration missing: GITHUB_TOKEN, GITHUB_ORG, or GITHUB_REPO not set');
     }
 
-    const searchUrl = `https://api.github.com/search/issues?q=${encodeURIComponent(ticketKey)}+repo:${githubOrg}/${githubRepo}+type:pr`;
+    const searchUrl = `https://api.github.com/search/issues?q=${encodeURIComponent(ticketKey)}+repo:${githubOrg}/${githubRepoYot}+type:pr`;
     
     const response = await fetch(searchUrl, {
         headers: {

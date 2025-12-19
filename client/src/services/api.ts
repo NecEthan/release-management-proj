@@ -19,8 +19,8 @@ export const API = {
         return response.json();
     },
 
-    async getReleases() {
-        const response = await fetch(`${API_BASE_URL}/releases`);
+    async getReleases(currentProject: string) {
+        const response = await fetch(`${API_BASE_URL}/releases?project=${currentProject}`);
         if (!response.ok) {
             throw new Error('Failed to fetch releases');
         }
