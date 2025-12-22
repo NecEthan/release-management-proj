@@ -58,6 +58,26 @@ router.post('/', async (req, res) => {
     }
 });
 
+router.get('/stats/last-month', async (req, res) => {
+    try {
+        const { project = 'YOT' } = req.query;
+
+        const result = await pool.query(
+            `SELECT COUNT(*) as count
+             FROM releases
+             WHERE project = $1
+             AND release_date >= DATE_TRUNC('month', CURRENT_DATE)
+             AND release_date < DATE_TRUNC('month', CURRENT_DATE) + INTERVAL '1 month'`,
+            [project]
+        );
+        res.json({ count: result.rows[0].count });
+    } catch (error) {
+        console.error('Error fetching release stats:', error);
+        res.status(500).json({ error: error.message });
+    }                                       
+
+})
+
 router.get('/', async (req, res) => {
     try {
         const { project = 'YOT' } = req.query;

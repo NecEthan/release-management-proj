@@ -3,6 +3,7 @@ import './Releases.css'
 import PageHeader from '../components/page-header'
 import { API } from '../services/api'
 import { useProject } from '../contexts/ProjectContext'
+import ReactPaginate from 'react-paginate'
 
 type Release = {
   id: number;
@@ -20,18 +21,27 @@ export default function Releases() {
   const [activeTab, setActiveTab] = useState<'jira' | 'prs'>('jira')
   const { currentProject } = useProject();
 
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = 5;
+
+  const pageCount = Math.ceil(releases.length / itemsPerPage);
+  const offset = currentPage * itemsPerPage;
+  const paginatedReleases = releases.slice(offset, offset + itemsPerPage);
+
   useEffect(() => {
-    fetchReleases()
-  }, [currentProject])
+    fetchReleases();
+  }, [currentProject]);
 
   const fetchReleases = async () => {
     try {
-      const data = await API.getReleases(currentProject)
-      setReleases(data.releases)
+      setLoading(true);
+      const data = await API.getReleases(currentProject);
+      setReleases(data.releases);
+      setCurrentPage(0);
     } catch (error) {
-      console.error('Error fetching releases:', error)
+      console.error('Error fetching releases:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -42,6 +52,10 @@ export default function Releases() {
     } catch (error) {
       console.error('Error fetching release details:', error)
     }
+  }
+
+  const handlePageClick = (event: { selected: number }) => {
+    setCurrentPage(event.selected);
   }
 
   const closeDialog = async () => {
@@ -59,7 +73,7 @@ export default function Releases() {
             No releases found for this project
           </div>
         ) : (
-          releases.map((release) => (
+          paginatedReleases.map((release) => (
           <div
             key={release.id}
             className="release-item"
@@ -78,6 +92,34 @@ export default function Releases() {
           ))
         )}
       </div>
+
+     {paginatedReleases.length > 0 && (
+        <div className="pagination-wrapper">
+          <div className="pagination-info">
+            <span className="pagination-current">
+              Page {currentPage + 1} of {pageCount}
+            </span>
+          </div>
+          <ReactPaginate
+            previousLabel="‹ Previous"
+            nextLabel="Next ›"
+            breakLabel={null}
+            pageCount={pageCount}
+            onPageChange={handlePageClick}
+            containerClassName="pagination"
+            pageLinkClassName="pagination-page"
+            previousLinkClassName="pagination-nav"
+            nextLinkClassName="pagination-nav"
+            breakLinkClassName="pagination-break"
+            disabledLinkClassName="pagination-disabled"
+            activeLinkClassName="pagination-active"
+            pageRangeDisplayed={0}
+            marginPagesDisplayed={0}
+            forcePage={currentPage}
+          />
+        </div>
+      )}
+
 
       {selectedRelease && (
         <div className="dialog-overlay" onClick={closeDialog}>

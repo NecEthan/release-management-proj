@@ -1,21 +1,59 @@
-import MainContent from '../components/main-content'
+import { useEffect, useState } from 'react';
 import PageHeader from '../components/page-header'
+import { useProject } from '../contexts/ProjectContext';
 import './Home.css'
+import { API } from '../services/api';
 
 export default function Home() {
-  const stats = {
-    currentLiveVersion: 'v2.4.1',
+ 
+  const { currentProject } = useProject();
+  const [productionVersion, setProductionVersion] = useState<string>('');
+  const [releasesThisMonth, setReleasesThisMonth] = useState<number>(0);
+  const [releases, setReleases] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetchProductionVersion();
+    fetchReleasesThisMonth();
+    fetchReleases();
+  }, [currentProject]);
+
+   const fetchReleases = async () => {
+      try {
+        const data = await API.getReleases(currentProject)
+        setReleases(data.releases)
+      } catch (error) {
+        console.error('Error fetching releases:', error)
+      } 
+    }
+
+  const fetchProductionVersion = async () => {
+    try {
+      const data = await API.getEnvironments(currentProject);
+      const production = data.environments.find((env: any) => env.name.toLowerCase() === 'develop');
+      setProductionVersion(production?.current_version || 'N/A');
+    } catch (error) {
+      console.error('Error fetching production version:', error);
+      setProductionVersion('Error');
+    }
+  };
+
+  const fetchReleasesThisMonth = async () => {
+    try {
+      const data = await API.getReleaseStatsLastMonth(currentProject);
+      setReleasesThisMonth(data.count);
+    } catch (error) {
+      console.error('Error fetching releases count:', error);
+      setReleasesThisMonth(0);
+    }
+  };
+
+
+   const stats = {
+    currentLiveVersion: productionVersion,
     nextReleaseVersion: 'v2.5.0',
-    releasesThisMonth: 3,
+    releasesThisMonth: releasesThisMonth,
     activeHotfixes: 2,
   }
-
-  const releases = [
-    { id: 1, version: 'v2.5.0', date: '2025-12-20', description: 'New user dashboard and analytics' },
-    { id: 2, version: 'v2.4.2', date: '2025-12-15', description: 'Bug fixes and performance improvements' },
-    { id: 3, version: 'v2.4.1', date: '2025-12-01', description: 'Security patches and UI updates' },
-    { id: 4, version: 'v2.4.0', date: '2025-11-15', description: 'Major feature release' },
-  ]
 
   return (
     <div className="home">

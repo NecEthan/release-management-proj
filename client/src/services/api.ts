@@ -49,5 +49,10 @@ export const API = {
             throw new Error('Failed to fetch deployment details');
         }
         return response.json();
+    },
+
+    async getReleaseStatsLastMonth(currentProject: string) {
+        const response = await fetch(`http://localhost:5000/api/releases/stats/last-month?project=${currentProject}`);
+        return await response.json();
     }
 }

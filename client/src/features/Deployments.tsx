@@ -4,6 +4,7 @@ import { Deployment } from '../types/deployment.type';
 import './Deployments.css';
 import SearchBar from '../components/search-bar';
 import { useProject } from '../contexts/ProjectContext';
+import ReactPaginate from 'react-paginate';
 
 export default function Deployments() {
     const [deployments, setDeployments] = useState<Deployment[]>([]);
@@ -11,6 +12,9 @@ export default function Deployments() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [selectedDeployment, setSelectedDeployment] = useState<Deployment | null>(null);
+
+    const [currentPage, setCurrentPage] = useState(0);
+    const itemsPerPage = 5;
 
     const project = useProject();
 
@@ -24,6 +28,7 @@ export default function Deployments() {
             const data = await API.getDeployments(project.currentProject);
             setDeployments(data.deployments);
             setFilteredDeployments(data.deployments);
+            setCurrentPage(0);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to fetch deployments');
         } finally {
@@ -45,6 +50,10 @@ export default function Deployments() {
     const getEnvironmentLabel = (env: string) => {
         return env;
     };
+
+    const handlePageClick = (event: {selected: number}) => {
+        setCurrentPage(event.selected);
+    }
 
     const handleDeploymentClick = async (deployment: Deployment) => {
         try {
@@ -71,6 +80,10 @@ export default function Deployments() {
         );
         setFilteredDeployments(filtered);
     }
+
+    const pageCount = Math.ceil(filteredDeployments.length / itemsPerPage);
+    const offset = currentPage * itemsPerPage;
+    const currentPageDeployments = filteredDeployments.slice(offset, offset + itemsPerPage);
 
     if (loading) {
         return <div className="deployments-container">Loading deployments...</div>;
@@ -100,7 +113,8 @@ export default function Deployments() {
                         No deployments found for this project
                     </div>
                 ) : (
-                    filteredDeployments.map((deployment) => (
+                    currentPageDeployments
+                    .map((deployment) => (
                     <div key={deployment.id} className="deployment-card" onClick={() => handleDeploymentClick(deployment)}>
                         <div className="deployment-main">
                             <div className="deployment-environment">
@@ -129,6 +143,33 @@ export default function Deployments() {
                     ))
                 )}
             </div>
+
+            {filteredDeployments.length > 0 && (
+                <div className="pagination-wrapper">
+                    <div className="pagination-info">
+                        <span className="pagination-current">
+                            Page {currentPage + 1} of {pageCount}
+                        </span>
+                    </div>
+                    <ReactPaginate
+                        previousLabel="‹ Previous"
+                        nextLabel="Next ›"
+                        breakLabel={null}
+                        pageCount={pageCount}
+                        onPageChange={handlePageClick}
+                        containerClassName="pagination"
+                        pageLinkClassName="pagination-page"
+                        previousLinkClassName="pagination-nav"
+                        nextLinkClassName="pagination-nav"
+                        breakLinkClassName="pagination-break"
+                        disabledLinkClassName="pagination-disabled"
+                        activeLinkClassName="pagination-active"
+                        pageRangeDisplayed={0}
+                        marginPagesDisplayed={0}
+                        forcePage={currentPage}
+                    />
+                </div>
+            )}
 
             {selectedDeployment && (
                 <div className="dialog-overlay" onClick={closeDialog}>
