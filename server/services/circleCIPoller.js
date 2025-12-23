@@ -2,6 +2,15 @@ const circleCIService = require('./circleCIService');
 const jiraService = require('./jiraService');
 const pool = require('../db');
 
+
+function isHotfixDeployment(commitMessage, branch) {
+    const msg = commitMessage.toLowerCase();
+    const hotfixCommit = msg.toLowerCase().includes('hotfix');
+    const HotfixBranch = branch.toLowerCase().includes('hotfix');
+
+    return HotfixBranch || hotfixCommit;
+}
+
 async function getWorkflowsForPipeline(pipelineId) {
     const token = process.env.CIRCLECI_TOKEN;
     const url = `https://circleci.com/api/v2/pipeline/${pipelineId}/workflow`;
@@ -51,7 +60,7 @@ function mapWorkflowToEnvironment(workflowName, branch) {
     return 'Develop';
 }
 
-async function pollDeployments() {
+async function pollDeployments(project = 'YOT') {
     const deployments = [];
     
     try {
@@ -60,7 +69,7 @@ async function pollDeployments() {
             const workflows = await getWorkflowsForPipeline(pipeline.id);
             for (const workflow of workflows) {
                 if (workflow.status === 'success') {
-                    const deployment = await processDeployment(pipeline, workflow);
+                    const deployment = await processDeployment(pipeline, workflow, project);
                     if (deployment) {
                         deployments.push(deployment);
                     }
@@ -75,7 +84,7 @@ async function pollDeployments() {
     }
 }
 
-async function processDeployment(pipeline, workflow) {
+async function processDeployment(pipeline, workflow, project = 'YOT') {
     try {
         const commitMessage = pipeline.vcs.commit?.subject || '';
         let version = extractVersionFromCommit(commitMessage);
@@ -137,14 +146,16 @@ async function processDeployment(pipeline, workflow) {
         );
         
         let releaseId;
+        let isNewRelease = false;
         if (releaseResult.rows.length === 0) {
             const newRelease = await pool.query(
-                `INSERT INTO releases (version, status, release_date)
-                 VALUES ($1, 'active', NOW())
+                `INSERT INTO releases (version, status, release_date, project)
+                 VALUES ($1, 'active', NOW(), $2)
                  RETURNING id`,
-                [version]
+                [version, project]
             );
             releaseId = newRelease.rows[0].id;
+            isNewRelease = true;
         } else {
             releaseId = releaseResult.rows[0].id;
         }
@@ -189,7 +200,7 @@ async function processDeployment(pipeline, workflow) {
             }
             
         } catch (error) {
-            console.error(`   ❌ Failed to fetch Jira tickets: ${error.message}`);
+            console.error(`Failed to fetch Jira tickets for ${version}: ${error.message}`);
         }
         
         const envResult = await pool.query(
@@ -216,11 +227,12 @@ async function processDeployment(pipeline, workflow) {
             [environmentId, releaseId, workflow.stopped_at, pipeline.vcs.branch, pipeline.vcs.revision]
         );
         
-        if (pipeline.vcs.branch.toLowerCase().includes('hotfix')) {
+        if (isHotfixDeployment(commitMessage, pipeline.vcs.branch)) {
             await pool.query(
-                `INSERT INTO hotfixes (release_id, title, description, status, created_at)
-                 VALUES ($1, $2, $3, 'deployed', $4)`,
-                [releaseId, `Hotfix: ${pipeline.vcs.branch}`, commitMessage, workflow.stopped_at]
+                `INSERT INTO hotfixes (release_id, title, description, status, created_at, project)
+                 VALUES ($1, $2, $3, 'deployed', $4, $5)
+                 ON CONFLICT DO NOTHING`,
+                [releaseId, `Hotfix: ${pipeline.vcs.branch}`, commitMessage, workflow.stopped_at, project]
             );
         }
         

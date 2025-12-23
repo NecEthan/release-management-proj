@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import './sidenav.css'
 import { useProject } from '../contexts/ProjectContext';
 
-type MenuKey = 'home' | 'environments' | 'releases' | 'deployments' | 'hotfixes'
+type MenuKey = 'home' | 'environments' | 'releases' | 'deployments' | 'hotfixes' | 'analytics'
 
 const projects = [
     { value: 'YOT', label: 'YOT' },
@@ -27,11 +27,18 @@ export default function Sidenav({
     { key: 'releases', label: 'Releases' },
     { key: 'deployments', label: 'Deployments' },
     { key: 'hotfixes', label: 'Hotfixes' },
+    { key: 'analytics', label: 'Analytics' },
   ]
 
   const handleSelect = (project: typeof projects[0]) => {
     setCurrentProject(project.value);
     setIsOpen(false);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('isAuthenticated');
+    localStorage.removeItem('username');
+    window.location.reload();
   };
 
   useEffect(() => {
@@ -103,6 +110,16 @@ export default function Sidenav({
           ))}
         </ul>
       </nav>
+
+      <div className="sidenav-footer">
+        <button 
+          type="button"
+          className="logout-button"
+          onClick={handleLogout}
+        >
+          Logout
+        </button>
+      </div>
     </aside>
   )
 }

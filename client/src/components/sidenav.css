@@ -10,6 +10,8 @@
   box-sizing: border-box;
   overflow-y: auto;
   box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
 }
 
 .sidenav-title {
@@ -196,6 +198,33 @@
   background: linear-gradient(90deg, rgba(255, 140, 0, 0.25), rgba(255, 140, 0, 0.15));
   color: #ff8c00;
   font-weight: 700;
+}
+
+.sidenav-footer {
+  margin-top: auto;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 140, 0, 0.2);
+}
+
+.logout-button {
+  width: 100%;
+  padding: 14px 20px;
+  background: rgba(255, 140, 0, 0.2);
+  border: 2px solid rgba(255, 140, 0, 0.4);
+  border-radius: 8px;
+  color: #ff8c00;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout-button:hover {
+  background: rgba(255, 140, 0, 0.3);
+  border-color: rgba(255, 140, 0, 0.6);
+  color: #ffa500;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
 }
 
 .dropdown-item svg {

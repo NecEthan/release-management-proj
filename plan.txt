@@ -1,4 +1,18 @@
 
+TODO
 
-- webhook circleCi - everytime new deployment save to DB so know which release in which env
-- jira tickets/PRs - Jira api for each release to get related tickets/PRs
+- analytics page
+- Deployment frequency: Deployments per day/week/month (line chart over time)
+Deployment success rate: % of successful vs failed deployments
+Average deployment duration: How long deployments take to complete
+Deployments by environment: Pie chart showing distribution across Develop/Release/RC/Master
+Deployments by time of day: Heatmap showing when most deployments happen
+
+
+Release Metrics
+Release velocity: Number of releases per sprint/month (trend over time)
+Time to production: Average days from Develop → Master
+Release size: Average number of Jira tickets per release
+Release cycle time: Time between releases
+
+- athenticeation 

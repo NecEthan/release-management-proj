@@ -1,2 +1,2 @@
-type MenuKey = 'home' | 'environments' | 'releases' | 'deployments' | 'hotfixes';
+type MenuKey = 'home' | 'environments' | 'releases' | 'deployments' | 'hotfixes' | 'analytics';
 export default MenuKey;
