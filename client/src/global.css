@@ -55,7 +55,6 @@ a, button {
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, rgba(11, 18, 32, 0.92) 0%, rgba(0, 0, 0, 0.88) 100%);
   backdrop-filter: blur(8px);
   display: flex;
   align-items: center;

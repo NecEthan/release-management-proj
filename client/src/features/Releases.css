@@ -97,13 +97,6 @@
   background-color: rgba(255, 255, 255, 0.03);
 }
 
-.dialog-tab.active {
-  color: #0b1220;
-  background: linear-gradient(135deg, #ff8c00 0%, #ff6b00 100%);
-  box-shadow: 0 2px 8px rgba(255, 140, 0, 0.3);
-  border-color: rgba(255, 140, 0, 0.3);
-}
-
 .dialog-status {
   display: inline-block;
   color: rgba(245, 245, 245, 0.8);
@@ -276,15 +269,35 @@
   font-family: 'Courier New', monospace;
   font-weight: 700;
   color: #ab47bc;
-  font-size: 0.9rem;
-  width: 90px;
+  font-size: 1rem;
+  min-width: 65px;
+  height: 32px;
   flex-shrink: 0;
-  padding: 6px 12px;
-  background-color: rgba(156, 39, 176, 0.1);
-  border-radius: 6px;
-  border: 1px solid rgba(156, 39, 176, 0.2);
+  padding: 0 14px;
+  background-color: rgba(156, 39, 176, 0.15);
+  border-radius: 16px;
+  border: 2px solid rgba(156, 39, 176, 0.4);
   text-align: center;
-  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(156, 39, 176, 0.2);
+}
+
+.pr-ticket-badge {
+  font-family: 'Courier New', monospace;
+  font-weight: 700;
+  color: #ffa726;
+  font-size: 0.9rem;
+  padding: 5px 14px;
+  background: linear-gradient(135deg, rgba(255, 140, 0, 0.15), rgba(255, 167, 38, 0.1));
+  border-radius: 6px;
+  border: 2px solid rgba(255, 140, 0, 0.5);
+  flex-shrink: 0;
+  margin-right: 8px;
+  box-shadow: 0 1px 3px rgba(255, 140, 0, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 .pr-item:hover .pr-id {

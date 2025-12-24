@@ -131,18 +131,17 @@ export default function Releases() {
               </button>
             </div>
 
-            <p className="dialog-status">Status: <strong>{selectedRelease.status}</strong></p>
-            <p className="dialog-date">Release Date: {new Date(selectedRelease.release_date).toLocaleString()}</p>
+            <p className="dialog-date">Release Date: {new Date(selectedRelease.release_date).toLocaleDateString()}</p>
 
             <div className="dialog-tabs">
               <button
-                className={`dialog-tab ${activeTab === 'jira' ? 'active' : ''}`}
+                className="dialog-tab"
                 onClick={() => setActiveTab('jira')}
               >
                 Jira Tickets ({selectedRelease.jiraTickets?.length || 0})
               </button>
               <button
-                className={`dialog-tab ${activeTab === 'prs' ? 'active' : ''}`}
+                className="dialog-tab"
                 onClick={() => setActiveTab('prs')}
               >
                 Pull Requests ({selectedRelease.pullRequests?.length || 0})
@@ -176,19 +175,28 @@ export default function Releases() {
             {activeTab === 'prs' && (
               <div className="prs-list">
                 {selectedRelease.pullRequests?.length > 0 ? (
-                  selectedRelease.pullRequests.map((pr: any) => (
-                    <a 
-                      key={pr.id} 
-                      href={pr.url} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      className="pr-item"
-                    >
-                      <span className="pr-id">#{pr.pr_number}</span>
-                      <span className="pr-title">{pr.title}</span>
-                      <span className="pr-author">by {pr.author}</span>
-                    </a>
-                  ))
+                  selectedRelease.pullRequests.map((pr: any) => {
+                    const ticketMatches = pr.title.match(/PP[-\s_]?\d+/gi);
+                    
+                    return (
+                      <a 
+                        key={pr.id} 
+                        href={pr.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="pr-item"
+                      >
+                        <span className="pr-id">#{pr.pr_number}</span>
+                        {ticketMatches && ticketMatches.map((ticket: string, index: number) => (
+                          <span key={`${ticket}-${index}`} className="pr-ticket-badge">
+                            {ticket.toUpperCase().replace(/[\s_]/g, '-')}
+                          </span>
+                        ))}
+                        <span className="pr-title">{pr.title}</span>
+                        <span className="pr-author">by {pr.author}</span>
+                      </a>
+                    );
+                  })
                 ) : (
                   <p className="no-data-message">No pull requests found for this release</p>
                 )}
