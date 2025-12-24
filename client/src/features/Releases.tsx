@@ -135,13 +135,13 @@ export default function Releases() {
 
             <div className="dialog-tabs">
               <button
-                className="dialog-tab"
+                className={`dialog-tab jira-tab ${activeTab === 'jira' ? 'active' : ''}`}
                 onClick={() => setActiveTab('jira')}
               >
                 Jira Tickets ({selectedRelease.jiraTickets?.length || 0})
               </button>
               <button
-                className="dialog-tab"
+                className={`dialog-tab prs-tab ${activeTab === 'prs' ? 'active' : ''}`}
                 onClick={() => setActiveTab('prs')}
               >
                 Pull Requests ({selectedRelease.pullRequests?.length || 0})

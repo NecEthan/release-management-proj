@@ -47,7 +47,9 @@ export default function Environments() {
             <div className="env-version">{env.current_version}</div>
             <div className="env-deployed">
               <span className="deployed-label">Last Deployed:</span>
-              <span className="deployed-time">{env.last_deployed_at}</span>
+              <span className="deployed-time">
+                {env.last_deployed_at ? new Date(env.last_deployed_at).toLocaleDateString() : 'N/A'}
+              </span>
             </div>
           </div>
           ))

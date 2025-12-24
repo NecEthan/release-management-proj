@@ -74,7 +74,6 @@ a, button {
 }
 
 .dialog {
-  background: linear-gradient(135deg, #0b1220 0%, #0a1018 100%);
   border: 1px solid rgba(255, 140, 0, 0.2);
   border-radius: 16px;
   width: calc(100% - 40px);
@@ -143,10 +142,6 @@ a, button {
   border-color: rgba(255, 140, 0, 0.3);
   transform: rotate(90deg);
 }
-
-.dialog-content {
-  padding: 28px;
-  overfl
 
 .dialog-section-scrollable {
   max-height: 400px;

@@ -97,6 +97,24 @@
   background-color: rgba(255, 255, 255, 0.03);
 }
 
+.dialog-tab.active {
+  color: #0b1220;
+  font-weight: 700;
+  border: 2px solid;
+}
+
+.jira-tab.active {
+  background: linear-gradient(135deg, #ffa726 0%, #ff8c00 100%);
+  border-color: rgba(255, 140, 0, 0.6);
+  box-shadow: 0 2px 8px rgba(255, 140, 0, 0.4);
+}
+
+.prs-tab.active {
+  background: linear-gradient(135deg, #ab47bc 0%, #8e24aa 100%);
+  border-color: rgba(156, 39, 176, 0.6);
+  box-shadow: 0 2px 8px rgba(156, 39, 176, 0.4);
+}
+
 .dialog-status {
   display: inline-block;
   color: rgba(245, 245, 245, 0.8);
