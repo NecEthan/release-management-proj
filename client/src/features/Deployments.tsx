@@ -210,7 +210,14 @@ export default function Deployments() {
                                     <svg className="icon" viewBox="0 0 16 16" fill="currentColor">
                                         <path d="M11.93 8.5a4.002 4.002 0 01-7.86 0H.75a.75.75 0 010-1.5h3.32a4.002 4.002 0 017.86 0h3.32a.75.75 0 010 1.5h-3.32zM8 6a2 2 0 100 4 2 2 0 000-4z"></path>
                                     </svg>
-                                    {selectedDeployment.commit_sha}
+                                    <a 
+                                        href={`https://github.com/Northgate-Public-Services/yot-ui/commit/${selectedDeployment.commit_sha}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="commit-link"
+                                    >
+                                        {selectedDeployment.commit_sha}
+                                    </a>
                                 </div>
                             </div>
 

@@ -130,69 +130,70 @@ export default function Releases() {
                 ×
               </button>
             </div>
-            <div className="dialog-content">
-              <div className="dialog-section">
-                <p className="dialog-status">Status: <strong>{selectedRelease.status}</strong></p>
-                <p className="dialog-date">Release Date: {new Date(selectedRelease.release_date).toLocaleString()}</p>
-              </div>
 
-              <div className="dialog-tabs">
-                <button
-                  className={`dialog-tab ${activeTab === 'jira' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('jira')}
-                >
-                  Jira Tickets ({selectedRelease.jiraTickets?.length || 0})
-                </button>
-                <button
-                  className={`dialog-tab ${activeTab === 'prs' ? 'active' : ''}`}
-                  onClick={() => setActiveTab('prs')}
-                >
-                  Pull Requests ({selectedRelease.pullRequests?.length || 0})
-                </button>
-              </div>
+            <p className="dialog-status">Status: <strong>{selectedRelease.status}</strong></p>
+            <p className="dialog-date">Release Date: {new Date(selectedRelease.release_date).toLocaleString()}</p>
 
-              {activeTab === 'jira' && (
-                <div className="dialog-section">
-                  <div className="dialog-section-scrollable">
-                    <div className="tickets-list">
-                      {selectedRelease.jiraTickets?.length > 0 ? (
-                        selectedRelease.jiraTickets.map((ticket: any) => (
-                          <div key={ticket.id} className="ticket-item">
-                            <a href={ticket.url} target="_blank" rel="noopener noreferrer" className="ticket-id">{ticket.jira_key}</a>
-                            <span className="ticket-title">{ticket.summary}</span>
-                            <span className={`ticket-status status-${ticket.status?.toLowerCase().replace(' ', '-')}`}>
-                              {ticket.status}
-                            </span>
-                          </div>
-                        ))
-                      ) : (
-                        <p>No Jira tickets found for this release</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {activeTab === 'prs' && (
-                <div className="dialog-section">
-                  <div className="dialog-section-scrollable">
-                    <div className="prs-list">
-                      {selectedRelease.pullRequests?.length > 0 ? (
-                        selectedRelease.pullRequests.map((pr: any) => (
-                          <div key={pr.id} className="pr-item">
-                            <a href={pr.url} target="_blank" rel="noopener noreferrer" className="pr-id">#{pr.pr_number}</a>
-                            <span className="pr-title">{pr.title}</span>
-                            <span className="pr-author">by {pr.author}</span>
-                          </div>
-                        ))
-                      ) : (
-                        <p>No pull requests found for this release</p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
+            <div className="dialog-tabs">
+              <button
+                className={`dialog-tab ${activeTab === 'jira' ? 'active' : ''}`}
+                onClick={() => setActiveTab('jira')}
+              >
+                Jira Tickets ({selectedRelease.jiraTickets?.length || 0})
+              </button>
+              <button
+                className={`dialog-tab ${activeTab === 'prs' ? 'active' : ''}`}
+                onClick={() => setActiveTab('prs')}
+              >
+                Pull Requests ({selectedRelease.pullRequests?.length || 0})
+              </button>
             </div>
+
+            {activeTab === 'jira' && (
+              <div className="tickets-list">
+                {selectedRelease.jiraTickets?.length > 0 ? (
+                  selectedRelease.jiraTickets.map((ticket: any) => (
+                    <a 
+                      key={ticket.id} 
+                      href={ticket.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="ticket-item"
+                    >
+                      <span className="ticket-id">{ticket.jira_key}</span>
+                      <span className="ticket-title">{ticket.summary}</span>
+                      <span className={`ticket-status status-${ticket.status?.toLowerCase().replace(' ', '-')}`}>
+                        {ticket.status}
+                      </span>
+                    </a>
+                  ))
+                ) : (
+                  <p className="no-data-message">No Jira tickets found for this release</p>
+                )}
+              </div>
+            )}
+
+            {activeTab === 'prs' && (
+              <div className="prs-list">
+                {selectedRelease.pullRequests?.length > 0 ? (
+                  selectedRelease.pullRequests.map((pr: any) => (
+                    <a 
+                      key={pr.id} 
+                      href={pr.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="pr-item"
+                    >
+                      <span className="pr-id">#{pr.pr_number}</span>
+                      <span className="pr-title">{pr.title}</span>
+                      <span className="pr-author">by {pr.author}</span>
+                    </a>
+                  ))
+                ) : (
+                  <p className="no-data-message">No pull requests found for this release</p>
+                )}
+              </div>
+            )}
           </div>
         </div>
       )}

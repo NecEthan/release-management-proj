@@ -34,6 +34,10 @@
     cursor: pointer;
 }
 
+.deployment-card * {
+    cursor: pointer;
+}
+
 .deployment-card:hover {
     background-color: rgba(255, 255, 255, 0.05);
     transform: translateY(-1px);
@@ -135,55 +139,85 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.7);
+    background: linear-gradient(135deg, rgba(11, 18, 32, 0.92) 0%, rgba(0, 0, 0, 0.88) 100%);
+    backdrop-filter: blur(8px);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 .dialog-content {
-    background: linear-gradient(135deg, #0a2a66 0%, #061a44 100%);
-    border: 2px solid rgba(255, 140, 0, 0.3);
-    border-radius: 12px;
+    background: linear-gradient(135deg, #0b1220 0%, #0a1018 100%);
+    border: 1px solid rgba(255, 140, 0, 0.2);
+    border-radius: 16px;
     width: 90%;
     max-width: 600px;
     max-height: 80vh;
     overflow-y: auto;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 140, 0, 0.1);
+    overflow-x: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 140, 0, 0.1);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .dialog-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 20px 24px;
-    border-bottom: 2px solid rgba(255, 140, 0, 0.2);
+    padding: 28px;
+    border-bottom: 1px solid rgba(255, 140, 0, 0.15);
 }
 
 .dialog-header h2 {
     margin: 0;
+    color: #ff8c00;
+    font-family: 'Courier New', monospace;
     font-size: 1.5rem;
-    color: #f5f5f5;
+    font-weight: 700;
+    text-shadow: 0 2px 8px rgba(255, 140, 0, 0.3);
 }
 
 .close-button {
-    background: none;
-    border: none;
-    color: rgba(245, 245, 245, 0.6);
-    font-size: 2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: rgba(245, 245, 245, 0.7);
+    font-size: 1.5rem;
     cursor: pointer;
     padding: 0;
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: color 0.2s;
+    transition: all 0.2s ease;
 }
 
 .close-button:hover {
     color: #ff8c00;
+    background: rgba(255, 140, 0, 0.1);
+    border-color: rgba(255, 140, 0, 0.3);
 }
 
 .dialog-body {
@@ -233,6 +267,19 @@
     font-family: 'Courier New', monospace;
     font-weight: 700;
     color: #ff8c00;
+}
+
+.commit-link {
+    color: #ff8c00;
+    text-decoration: none;
+    font-family: 'Courier New', monospace;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.commit-link:hover {
+    color: #ffaa33;
+    text-decoration: underline;
 }
 
 .pagination-wrapper {

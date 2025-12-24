@@ -27,6 +27,10 @@
   transition: all 0.2s ease;
 }
 
+.release-item * {
+  cursor: pointer;
+}
+
 .release-item:hover {
   background-color: rgba(255, 255, 255, 0.05);
   transform: translateY(-2px);
@@ -66,25 +70,26 @@
   color: rgba(245, 245, 245, 0.6);
 }
 
-
 .dialog-tabs {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   margin-bottom: 24px;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+  padding: 0;
 }
 
 .dialog-tab {
   background: none;
   border: none;
   color: rgba(245, 245, 245, 0.6);
-  font-size: 1rem;
-  font-weight: 500;
-  padding: 12px 20px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 12px 24px;
   cursor: pointer;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -2px;
+  border-radius: 8px;
   transition: all 0.2s ease;
+  flex: 1;
+  text-align: center;
+  border: 1px solid transparent;
 }
 
 .dialog-tab:hover {
@@ -93,19 +98,30 @@
 }
 
 .dialog-tab.active {
-  color: #ff8c00;
-  border-bottom-color: #ff8c00;
+  color: #0b1220;
+  background: linear-gradient(135deg, #ff8c00 0%, #ff6b00 100%);
+  box-shadow: 0 2px 8px rgba(255, 140, 0, 0.3);
+  border-color: rgba(255, 140, 0, 0.3);
 }
 
-.dialog-description {
-  color: rgba(245, 245, 245, 0.85);
+.dialog-status {
+  display: inline-block;
+  color: rgba(245, 245, 245, 0.8);
+  font-size: 0.9rem;
   margin-bottom: 8px;
-  line-height: 1.6;
+}
+
+.dialog-status strong {
+  color: #ff8c00;
+  font-weight: 600;
 }
 
 .dialog-date {
   color: rgba(245, 245, 245, 0.6);
   font-size: 0.9rem;
+  margin-bottom: 28px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .dialog-section h3 {
@@ -122,50 +138,108 @@
 
 .ticket-item {
   display: flex;
-  gap: 12px;
+  gap: 16px;
   align-items: center;
-  padding: 12px;
-  background-color: rgba(255, 255, 255, 0.03);
+  padding: 16px;
+  background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 6px;
-  transition: background-color 0.2s ease;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.ticket-item * {
+  cursor: pointer;
 }
 
 .ticket-item:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 140, 0, 0.03);
+  border-color: rgba(255, 140, 0, 0.3);
+  transform: translateX(4px);
+  box-shadow: 0 2px 8px rgba(255, 140, 0, 0.15);
 }
 
 .ticket-id {
   font-family: 'Courier New', monospace;
-  font-weight: 600;
+  font-weight: 700;
   color: #ff8c00;
   font-size: 0.9rem;
-  width: 100px;
+  width: 110px;
   flex-shrink: 0;
+  padding: 6px 12px;
+  background-color: rgba(255, 140, 0, 0.1);
+  border-radius: 6px;
+  border: 1px solid rgba(255, 140, 0, 0.2);
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.ticket-item:hover .ticket-id {
+  background-color: rgba(255, 140, 0, 0.2);
+  border-color: rgba(255, 140, 0, 0.4);
+  transform: scale(1.05);
 }
 
 .ticket-title {
-  color: rgba(245, 245, 245, 0.9);
+  color: rgba(245, 245, 245, 0.95);
   flex: 1;
+  line-height: 1.4;
 }
 
 .ticket-status {
-  padding: 4px 12px;
-  border-radius: 12px;
+  padding: 6px 14px;
+  border-radius: 20px;
   font-size: 0.8rem;
-  font-weight: 500;
+  font-weight: 600;
   white-space: nowrap;
   flex-shrink: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 1px solid;
 }
 
 .ticket-status.status-done {
-  background-color: rgba(76, 175, 80, 0.2);
-  color: #4caf50;
+  background: rgba(76, 175, 80, 0.15);
+  color: #81c784;
+  border-color: rgba(76, 175, 80, 0.3);
 }
 
-.ticket-status.status-in-review {
-  background-color: rgba(33, 150, 243, 0.2);
-  color: #2196f3;
+.ticket-status.status-in-review,
+.ticket-status.status-code-review {
+  background: rgba(33, 150, 243, 0.15);
+  color: #90caf9;
+  border-color: rgba(33, 150, 243, 0.3);
+}
+
+.ticket-status.status-rejected {
+  background: rgba(244, 67, 54, 0.15);
+  color: #ef9a9a;
+  border-color: rgba(244, 67, 54, 0.3);
+}
+
+.ticket-status.status-in-progress {
+  background: rgba(33, 150, 243, 0.15);
+  color: #90caf9;
+  border-color: rgba(33, 150, 243, 0.3);
+}
+
+.ticket-status.status-draft {
+  background: rgba(158, 158, 158, 0.15);
+  color: #bdbdbd;
+  border-color: rgba(158, 158, 158, 0.3);
+}
+
+.ticket-status.status-qa {
+  background: rgba(156, 39, 176, 0.15);
+  color: #ce93d8;
+  border-color: rgba(156, 39, 176, 0.3);
+}
+
+.ticket-status.status-blocked {
+  background: rgba(244, 67, 54, 0.15);
+  color: #ef9a9a;
+  border-color: rgba(244, 67, 54, 0.3);
 }
 
 .prs-list {
@@ -176,37 +250,63 @@
 
 .pr-item {
   display: flex;
-  gap: 12px;
+  gap: 16px;
   align-items: center;
-  padding: 12px;
-  background-color: rgba(255, 255, 255, 0.03);
+  padding: 16px;
+  background: transparent;
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 6px;
-  transition: background-color 0.2s ease;
+  border-radius: 10px;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.pr-item * {
+  cursor: pointer;
 }
 
 .pr-item:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background: rgba(156, 39, 176, 0.03);
+  border-color: rgba(156, 39, 176, 0.3);
+  transform: translateX(4px);
+  box-shadow: 0 2px 8px rgba(156, 39, 176, 0.15);
 }
 
 .pr-id {
   font-family: 'Courier New', monospace;
-  font-weight: 600;
-  color: #9c27b0;
+  font-weight: 700;
+  color: #ab47bc;
   font-size: 0.9rem;
-  width: 80px;
+  width: 90px;
   flex-shrink: 0;
+  padding: 6px 12px;
+  background-color: rgba(156, 39, 176, 0.1);
+  border-radius: 6px;
+  border: 1px solid rgba(156, 39, 176, 0.2);
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.pr-item:hover .pr-id {
+  background-color: rgba(156, 39, 176, 0.2);
+  border-color: rgba(156, 39, 176, 0.4);
+  transform: scale(1.05);
 }
 
 .pr-title {
-  color: rgba(245, 245, 245, 0.9);
+  color: rgba(245, 245, 245, 0.95);
   flex: 1;
+  line-height: 1.4;
 }
 
 .pr-author {
   color: rgba(245, 245, 245, 0.6);
   font-size: 0.85rem;
   flex-shrink: 0;
+  padding: 4px 12px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+  font-weight: 500;
 }
 
 .no-data-message {

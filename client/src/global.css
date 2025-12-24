@@ -55,73 +55,99 @@ a, button {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
+  background: linear-gradient(135deg, rgba(11, 18, 32, 0.92) 0%, rgba(0, 0, 0, 0.88) 100%);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
   padding: 20px;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .dialog {
-  background-color: #0b1220;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 12px;
-  width: 100%;
-  max-width: 900px;
+  background: linear-gradient(135deg, #0b1220 0%, #0a1018 100%);
+  border: 1px solid rgba(255, 140, 0, 0.2);
+  border-radius: 16px;
+  width: calc(100% - 40px);
+  max-width: 100%;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 140, 0, 0.1);
+  animation: slideUp 0.3s ease;
+  overflow: hidden;
+  padding: 28px;
+  padding-top: 0;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .dialog-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  position: sticky;
-  top: 0;
-  background-color: #0b1220;
-  z-index: 10;
+  padding: 28px;
+  margin: 0 -28px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid rgba(255, 140, 0, 0.15);
+  margin-bottom: 24px;
 }
 
 .dialog-header h2 {
   margin: 0;
   color: #ff8c00;
   font-family: 'Courier New', monospace;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-shadow: 0 2px 8px rgba(255, 140, 0, 0.3);
 }
 
 .dialog-close {
-  background: none;
-  border: none;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
   color: rgba(245, 245, 245, 0.7);
-  font-size: 2rem;
+  font-size: 1.5rem;
   cursor: pointer;
   line-height: 1;
   padding: 0;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.2s ease;
+  transition: all 0.2s ease;
 }
 
 .dialog-close:hover {
   color: #ff8c00;
+  background: rgba(255, 140, 0, 0.1);
+  border-color: rgba(255, 140, 0, 0.3);
+  transform: rotate(90deg);
 }
 
 .dialog-content {
-  padding: 24px;
-  overflow-y: auto;
-  flex: 1;
-}
-
-.dialog-section {
-  margin-bottom: 32px;
-}
+  padding: 28px;
+  overfl
 
 .dialog-section-scrollable {
   max-height: 400px;
