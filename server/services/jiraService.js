@@ -22,7 +22,7 @@ async function getJiraTicketsForRelease(version) {
     const data = await response.json();
     
     const ticketsWithPRs = await Promise.all(
-        data.issues.map(async (issue) => {
+        (data.issues || []).map(async (issue) => {
             const pullRequests = await getGitHubCommitsForTicket(issue.key);
 
             return {

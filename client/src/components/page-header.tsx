@@ -1,6 +1,7 @@
 import { useState } from "react";
 import './page-header.css';
 import { PageHeaderProps } from "../types/page-header-props.type";
+import { API } from "../services/api";
 
 export default function PageHeader({ title, description, onSync }: PageHeaderProps) {
     const [syncing, setSyncing] = useState(false);
@@ -9,7 +10,7 @@ export default function PageHeader({ title, description, onSync }: PageHeaderPro
         if (!onSync) return;
         setSyncing(true);
         try {
-            await fetch('http://localhost:5000/api/circleci/poll');
+            await API.syncCircleCI();
             await onSync();
         } catch (error) {
             console.error('Error during sync:', error);

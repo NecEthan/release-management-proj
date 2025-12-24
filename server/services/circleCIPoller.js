@@ -128,6 +128,87 @@ async function processDeployment(pipeline, workflow, project = 'YOT') {
             }
         }
         
+        let releaseResult = await pool.query(
+            'SELECT id FROM releases WHERE version = $1',
+            [version]
+        );
+        
+        let releaseId;
+        if (releaseResult.rows.length === 0) {
+            const newRelease = await pool.query(
+                `INSERT INTO releases (version, status, release_date, project)
+                 VALUES ($1, 'active', NOW(), $2)
+                 RETURNING id`,
+                [version, project]
+            );
+            releaseId = newRelease.rows[0].id;
+        } else {
+            releaseId = releaseResult.rows[0].id;
+        }
+        
+        try {
+            let jiraVersion = `${version} (${project})`;
+            let { tickets } = await jiraService.getJiraTicketsForRelease(jiraVersion);
+            
+            if (!tickets || tickets.length === 0) {
+                jiraVersion = version;
+                const result = await jiraService.getJiraTicketsForRelease(jiraVersion);
+                tickets = result.tickets;
+            }
+            
+            let ticketCount = 0;
+            let prCount = 0;
+            
+            for (const ticket of tickets) {
+                const existingTicket = await pool.query(
+                    `SELECT id FROM jira_tickets WHERE jira_key = $1`,
+                    [ticket.key]
+                );
+                
+                if (existingTicket.rows.length > 0) {
+                    await pool.query(
+                        `UPDATE jira_tickets 
+                         SET status = $1, summary = $2, url = $3, release_id = $4
+                         WHERE jira_key = $5`,
+                        [ticket.status, ticket.summary, ticket.url, releaseId, ticket.key]
+                    );
+                } else {
+                    await pool.query(
+                        `INSERT INTO jira_tickets (jira_key, summary, url, status, release_id)
+                         VALUES ($1, $2, $3, $4, $5)`,
+                        [ticket.key, ticket.summary, ticket.url, ticket.status, releaseId]
+                    );
+                }
+                ticketCount++;
+                
+                for (const pr of ticket.pullRequests) {
+                    const existingPR = await pool.query(
+                        `SELECT id FROM pull_requests WHERE pr_number = $1`,
+                        [pr.number]
+                    );
+                    
+                    if (existingPR.rows.length > 0) {
+                        await pool.query(
+                            `UPDATE pull_requests 
+                             SET title = $1, url = $2, author = $3, release_id = $4
+                             WHERE pr_number = $5`,
+                            [pr.title, pr.url, pr.author, releaseId, pr.number]
+                        );
+                    } else {
+                        await pool.query(
+                            `INSERT INTO pull_requests (pr_number, title, url, author, release_id)
+                             VALUES ($1, $2, $3, $4, $5)`,
+                            [pr.number, pr.title, pr.url, pr.author, releaseId]
+                        );
+                    }
+                    prCount++;
+                }
+            }
+            
+        } catch (error) {
+            console.error(`Failed to fetch Jira tickets for ${version}: ${error.message}`);
+        }
+        
         const existing = await pool.query(
             `SELECT id FROM deployments 
              WHERE commit_sha = $1 AND environment_id = (
@@ -138,69 +219,6 @@ async function processDeployment(pipeline, workflow, project = 'YOT') {
         
         if (existing.rows.length > 0) {
             return null;
-        }
-        
-        let releaseResult = await pool.query(
-            'SELECT id FROM releases WHERE version = $1',
-            [version]
-        );
-        
-        let releaseId;
-        let isNewRelease = false;
-        if (releaseResult.rows.length === 0) {
-            const newRelease = await pool.query(
-                `INSERT INTO releases (version, status, release_date, project)
-                 VALUES ($1, 'active', NOW(), $2)
-                 RETURNING id`,
-                [version, project]
-            );
-            releaseId = newRelease.rows[0].id;
-            isNewRelease = true;
-        } else {
-            releaseId = releaseResult.rows[0].id;
-        }
-        
-        try {
-            const jiraVersion = `${version} (YOT)`;
-            const { tickets } = await jiraService.getJiraTicketsForRelease(jiraVersion);
-            
-            let ticketCount = 0;
-            let prCount = 0;
-            
-            for (const ticket of tickets) {
-                const result = await pool.query(
-                    `INSERT INTO jira_tickets (jira_key, summary, url, status, release_id)
-                     VALUES ($1, $2, $3, $4, $5)
-                     ON CONFLICT (jira_key, release_id) 
-                     DO UPDATE SET 
-                         status = EXCLUDED.status,
-                         summary = EXCLUDED.summary,
-                         url = EXCLUDED.url
-                     RETURNING id`,
-                    [ticket.key, ticket.summary, ticket.url, ticket.status, releaseId]
-                );
-                
-                if (result.rows.length > 0) ticketCount++;
-                
-                for (const pr of ticket.pullRequests) {
-                    const prResult = await pool.query(
-                        `INSERT INTO pull_requests (pr_number, title, url, author, release_id)
-                         VALUES ($1, $2, $3, $4, $5)
-                         ON CONFLICT (pr_number, release_id) 
-                         DO UPDATE SET 
-                             title = EXCLUDED.title,
-                             url = EXCLUDED.url,
-                             author = EXCLUDED.author
-                         RETURNING id`,
-                        [pr.number, pr.title, pr.url, pr.author, releaseId]
-                    );
-                    
-                    if (prResult.rows.length > 0) prCount++;
-                }
-            }
-            
-        } catch (error) {
-            console.error(`Failed to fetch Jira tickets for ${version}: ${error.message}`);
         }
         
         const envResult = await pool.query(

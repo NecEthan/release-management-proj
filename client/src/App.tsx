@@ -14,12 +14,10 @@ import Authentication from './components/authentication'
 export default function App() {
   const [selected, setSelected] = useState<MenuKey>('home');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const authStatus = localStorage.getItem('isAuthenticated') === 'true';
     setIsAuthenticated(authStatus);
-    setLoading(false);
   }, [])
 
    const renderContent = () => {
