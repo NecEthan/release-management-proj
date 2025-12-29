@@ -64,9 +64,11 @@ async function pollDeployments(project = 'YOT') {
     const deployments = [];
     
     try {
-        const { items: pipelines } = await circleCIService.getEnvironmentVersions();
+        const { items: pipelines } = await circleCIService.getEnvironmentVersions(project);
+        
         for (const pipeline of pipelines) {
             const workflows = await getWorkflowsForPipeline(pipeline.id);
+            
             for (const workflow of workflows) {
                 if (workflow.status === 'success') {
                     const deployment = await processDeployment(pipeline, workflow, project);
@@ -86,14 +88,18 @@ async function pollDeployments(project = 'YOT') {
 
 async function processDeployment(pipeline, workflow, project = 'YOT') {
     try {
-        const commitMessage = pipeline.vcs.commit?.subject || '';
+        const commitSubject = pipeline.vcs.commit?.subject || '';
+        const commitBody = pipeline.vcs.commit?.body || '';
+        const commitMessage = `${commitSubject} ${commitBody}`.trim();
+        
         let version = extractVersionFromCommit(commitMessage);
         const environmentName = mapWorkflowToEnvironment(workflow.name, pipeline.vcs.branch);
         
         if (!version) {
             if (shouldCascadeFromDevelop(commitMessage, pipeline.vcs.branch)) {
                 const devVersion = await pool.query(
-                    `SELECT current_version FROM environments WHERE name = 'Develop'`
+                    `SELECT current_version FROM environments WHERE name = 'Develop' AND project = $1`,
+                    [project]
                 );
                 version = devVersion.rows[0]?.current_version;
                 if (!version) {
@@ -101,7 +107,8 @@ async function processDeployment(pipeline, workflow, project = 'YOT') {
                 }
             } else if (environmentName === 'Release') {
                 const devVersion = await pool.query(
-                    `SELECT current_version FROM environments WHERE name = 'Develop'`
+                    `SELECT current_version FROM environments WHERE name = 'Develop' AND project = $1`,
+                    [project]
                 );
                 version = devVersion.rows[0]?.current_version;
                 if (!version) {
@@ -109,7 +116,8 @@ async function processDeployment(pipeline, workflow, project = 'YOT') {
                 }
             } else if (environmentName === 'Release-Candidate') {
                 const releaseVersion = await pool.query(
-                    `SELECT current_version FROM environments WHERE name = 'Release'`
+                    `SELECT current_version FROM environments WHERE name = 'Release' AND project = $1`,
+                    [project]
                 );
                 version = releaseVersion.rows[0]?.current_version;
                 if (!version) {
@@ -117,7 +125,8 @@ async function processDeployment(pipeline, workflow, project = 'YOT') {
                 }
             } else if (environmentName === 'Master') {
                 const rcVersion = await pool.query(
-                    `SELECT current_version FROM environments WHERE name = 'Release-Candidate'`
+                    `SELECT current_version FROM environments WHERE name = 'Release-Candidate' AND project = $1`,
+                    [project]
                 );
                 version = rcVersion.rows[0]?.current_version;
                 if (!version) {
@@ -212,9 +221,9 @@ async function processDeployment(pipeline, workflow, project = 'YOT') {
         const existing = await pool.query(
             `SELECT id FROM deployments 
              WHERE commit_sha = $1 AND environment_id = (
-                 SELECT id FROM environments WHERE name = $2
+                 SELECT id FROM environments WHERE name = $2 AND project = $3
              )`,
-            [pipeline.vcs.revision, environmentName]
+            [pipeline.vcs.revision, environmentName, project]
         );
         
         if (existing.rows.length > 0) {
@@ -222,8 +231,8 @@ async function processDeployment(pipeline, workflow, project = 'YOT') {
         }
         
         const envResult = await pool.query(
-            'SELECT id FROM environments WHERE name = $1',
-            [environmentName]
+            'SELECT id FROM environments WHERE name = $1 AND project = $2',
+            [environmentName, project]
         );
         
         if (envResult.rows.length === 0) {

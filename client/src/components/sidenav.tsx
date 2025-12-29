@@ -6,7 +6,7 @@ type MenuKey = 'home' | 'environments' | 'releases' | 'deployments' | 'hotfixes'
 
 const projects = [
     { value: 'YOT', label: 'YOT' },
-    { value: 'MM', label: 'MM' }
+    { value: 'pathways-ui', label: 'Pathways UI' }
 ];
 
 export default function Sidenav({

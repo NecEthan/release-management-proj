@@ -47,6 +47,17 @@ export default function Home() {
     }
   };
 
+  const handleSync = async () => {
+    try {
+      await API.syncCircleCI(currentProject);
+      await fetchProductionVersion();
+      await fetchReleasesThisMonth();
+      await fetchReleases();
+    } catch (error) {
+      console.error('Error syncing with CircleCI:', error);
+    }
+  };
+
 
    const stats = {
     currentLiveVersion: productionVersion,
@@ -57,7 +68,7 @@ export default function Home() {
 
   return (
     <div className="home">
-      <PageHeader title="Overview" description="Key statistics and recent releases" />
+      <PageHeader title="Overview" description="Key statistics and recent releases" onSync={handleSync} />
 
       <div className="stats-container">
         <div className="stat-card">

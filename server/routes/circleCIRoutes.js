@@ -62,16 +62,20 @@ router.get('/deployments', async (req, res) => {
     }
 });
 
-router.get('/poll', async (req, res) => {
+router.post('/poll', async (req, res) => {
     try {
-        const deployments = await circleCIPoller.pollDeployments();
+        const { project = 'YOT' } = req.body;
+        
+        const deployments = await circleCIPoller.pollDeployments(project);
+        
         res.json({ 
             success: true, 
             deployments,
-            count: deployments.length 
+            count: deployments.length,
+            project
         });
     } catch (error) {
-        console.error('Error polling deployments:', error.message);
+        console.error(`❌ Error in /poll for project:`, error.message);
         res.status(500).json({ error: error.message });
     }
 });

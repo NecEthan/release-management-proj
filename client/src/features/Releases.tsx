@@ -45,6 +45,15 @@ export default function Releases() {
     }
   }
 
+  const handleSync = async () => {
+    try {
+      await API.syncCircleCI(currentProject);
+      await fetchReleases();
+    } catch (error) {
+      console.error('Error syncing with CircleCI:', error);
+    }
+  }
+
   const handleReleaseClick = async (release: Release) => {
     try {
       const data = await API.getReleaseDetails(release.id)
@@ -66,7 +75,7 @@ export default function Releases() {
 
   return (
     <div className="releases">
-      <PageHeader title="Releases" description="Track and manage all releases" onSync={fetchReleases} />
+      <PageHeader title="Releases" description="Track and manage all releases" onSync={handleSync} />
       <div className="releases-list">
         {releases.length === 0 ? (
           <div className="no-data-message">
@@ -83,7 +92,6 @@ export default function Releases() {
               <span className="release-version">{release.version}</span>
               <span className="release-date">{new Date(release.release_date).toLocaleDateString()}</span>
             </div>
-            <div className="release-description">{release.status}</div>
             <div className="release-stats">
               <span>{release.ticket_count ? parseInt(release.ticket_count) : 0} Jira Tickets</span>
               <span>{release.pr_count ? parseInt(release.pr_count) : 0} Pull Requests</span>

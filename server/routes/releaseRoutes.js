@@ -7,36 +7,36 @@ router.post('/', async (req, res) => {
     const client = await pool.connect();
 
     try {
-        const { version } = req.body;
+        const { version, project = 'YOT' } = req.body;
 
         await client.query('BEGIN');
 
         const releaseResult = await client.query(
-            `INSERT INTO releases (version, status, release_date) 
-             VALUES ($1, 'active', NOW()) 
-             ON CONFLICT (version) DO UPDATE SET updated_at = NOW()
+            `INSERT INTO releases (version, status, release_date, project) 
+             VALUES ($1, 'active', NOW(), $2) 
+             ON CONFLICT (version, project) DO UPDATE SET updated_at = NOW()
              RETURNING id`,
-            [version]
+            [version, project]
         );
 
         const releaseId = releaseResult.rows[0].id;
 
-        const { tickets } = await jiraService.getJiraTicketsForRelease(version);
+        const { tickets } = await jiraService.getJiraTicketsForRelease(version, project);
 
         for (const ticket of tickets) {
             await client.query(
-                `INSERT INTO jira_tickets (jira_key, summary, url, status, release_id)
-                 VALUES ($1, $2, $3, $4, $5)
+                `INSERT INTO jira_tickets (jira_key, summary, url, status, release_id, project)
+                 VALUES ($1, $2, $3, $4, $5, $6)
                  ON CONFLICT DO NOTHING`,
-                [ticket.key, ticket.summary, ticket.url, ticket.status, releaseId]
+                [ticket.key, ticket.summary, ticket.url, ticket.status, releaseId, project]
             );
             
             for (const pr of ticket.pullRequests) {
                 await client.query(
-                    `INSERT INTO pull_requests (pr_number, title, url, author, release_id)
-                     VALUES ($1, $2, $3, $4, $5)
+                    `INSERT INTO pull_requests (pr_number, title, url, author, release_id, project)
+                     VALUES ($1, $2, $3, $4, $5, $6)
                      ON CONFLICT DO NOTHING`,
-                    [pr.number, pr.title, pr.url, pr.author, releaseId]
+                    [pr.number, pr.title, pr.url, pr.author, releaseId, project]
                 );
             }
         }
@@ -46,7 +46,8 @@ router.post('/', async (req, res) => {
         res.json({ 
             success: true, 
             releaseId,
-            ticketsCount: tickets.length 
+            ticketsCount: tickets.length,
+            project
         });
 
     } catch (error) {
@@ -109,7 +110,16 @@ router.get('/environments', async (req, res) => {
     try {
         const { project = 'YOT' } = req.query;
         const result = await pool.query(
-            `SELECT * FROM environments WHERE project = $1 ORDER BY id`,
+            `SELECT * FROM environments 
+             WHERE project = $1 
+             ORDER BY 
+                CASE name 
+                    WHEN 'Develop' THEN 1
+                    WHEN 'Release' THEN 2
+                    WHEN 'Release-candidate' THEN 3
+                    WHEN 'Master' THEN 4
+                    ELSE 5
+                END`,
             [project]
         );
         res.json({ environments: result.rows });

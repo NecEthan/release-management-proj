@@ -1,10 +1,11 @@
-async function getJiraTicketsForRelease(version) {
+async function getJiraTicketsForRelease(version, project = 'YOT') {
     const apiKey = process.env.JIRA_API_KEY;
     const baseUrl = process.env.JIRA_BASE_URL;
     const email = process.env.JIRA_EMAIL;
     const jiraTicketBaseUrl = `${baseUrl}/browse`;
 
-    const jql = `project = PP AND fixVersion = "${version}" order by created DESC`;
+    const jiraProject = project === 'pathways-ui' ? 'PATH' : 'PP';
+    const jql = `project = ${jiraProject} AND fixVersion = "${version}" order by created DESC`;
     const fields = 'summary,status,priority,assignee,created,updated';
     const url = `${baseUrl}/rest/api/3/search/jql?jql=${encodeURIComponent(jql)}&fields=${fields}&maxResults=50`;
     
@@ -23,7 +24,7 @@ async function getJiraTicketsForRelease(version) {
     
     const ticketsWithPRs = await Promise.all(
         (data.issues || []).map(async (issue) => {
-            const pullRequests = await getGitHubCommitsForTicket(issue.key);
+            const pullRequests = await getGitHubCommitsForTicket(issue.key, project);
 
             return {
                 key: issue.key,
@@ -42,16 +43,18 @@ async function getJiraTicketsForRelease(version) {
     return { tickets: ticketsWithPRs, total: ticketsWithPRs.length };
 }
 
-async function getGitHubCommitsForTicket(ticketKey) {
+async function getGitHubCommitsForTicket(ticketKey, project = 'YOT') {
     const githubToken = process.env.GITHUB_TOKEN;
     const githubOrg = process.env.GITHUB_ORG;
-    const githubRepoYot = process.env.GITHUB_REPO_YOT;
+    const githubRepo = project === 'pathways-ui' 
+        ? process.env.GITHUB_REPO_PATHWAYS 
+        : process.env.GITHUB_REPO_YOT;
 
-    if (!githubToken || !githubOrg || !githubRepoYot) {
+    if (!githubToken || !githubOrg || !githubRepo) {
         throw new Error('GitHub configuration missing: GITHUB_TOKEN, GITHUB_ORG, or GITHUB_REPO not set');
     }
 
-    const searchUrl = `https://api.github.com/search/issues?q=${encodeURIComponent(ticketKey)}+repo:${githubOrg}/${githubRepoYot}+type:pr`;
+    const searchUrl = `https://api.github.com/search/issues?q=${encodeURIComponent(ticketKey)}+repo:${githubOrg}/${githubRepo}+type:pr`;
     
     const response = await fetch(searchUrl, {
         headers: {
