@@ -16,7 +16,8 @@ router.get('/environments', async (req, res) => {
 
 router.get('/deployments', async (req, res) => {
     try {
-        const { items: pipelines } = await circleCIService.getEnvironmentVersions();
+        const { project = 'YOT' } = req.query;
+        const { items: pipelines } = await circleCIService.getEnvironmentVersions(project);
         
         const deployments = [];
         

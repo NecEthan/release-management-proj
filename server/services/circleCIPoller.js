@@ -138,8 +138,8 @@ async function processDeployment(pipeline, workflow, project = 'YOT') {
         }
         
         let releaseResult = await pool.query(
-            'SELECT id FROM releases WHERE version = $1',
-            [version]
+            'SELECT id FROM releases WHERE version = $1 AND project = $2',
+            [version, project]
         );
         
         let releaseId;
@@ -156,12 +156,12 @@ async function processDeployment(pipeline, workflow, project = 'YOT') {
         }
         
         try {
-            let jiraVersion = `${version} (${project})`;
-            let { tickets } = await jiraService.getJiraTicketsForRelease(jiraVersion);
+            let jiraVersion = project === 'pathways-ui' ? `${version} (MM)` : `${version} (${project})`;
+            let { tickets } = await jiraService.getJiraTicketsForRelease(jiraVersion, project);
             
             if (!tickets || tickets.length === 0) {
                 jiraVersion = version;
-                const result = await jiraService.getJiraTicketsForRelease(jiraVersion);
+                const result = await jiraService.getJiraTicketsForRelease(jiraVersion, project);
                 tickets = result.tickets;
             }
             
@@ -177,15 +177,15 @@ async function processDeployment(pipeline, workflow, project = 'YOT') {
                 if (existingTicket.rows.length > 0) {
                     await pool.query(
                         `UPDATE jira_tickets 
-                         SET status = $1, summary = $2, url = $3, release_id = $4
-                         WHERE jira_key = $5`,
-                        [ticket.status, ticket.summary, ticket.url, releaseId, ticket.key]
+                         SET status = $1, summary = $2, url = $3, release_id = $4, project = $5
+                         WHERE jira_key = $6`,
+                        [ticket.status, ticket.summary, ticket.url, releaseId, project, ticket.key]
                     );
                 } else {
                     await pool.query(
-                        `INSERT INTO jira_tickets (jira_key, summary, url, status, release_id)
-                         VALUES ($1, $2, $3, $4, $5)`,
-                        [ticket.key, ticket.summary, ticket.url, ticket.status, releaseId]
+                        `INSERT INTO jira_tickets (jira_key, summary, url, status, release_id, project)
+                         VALUES ($1, $2, $3, $4, $5, $6)`,
+                        [ticket.key, ticket.summary, ticket.url, ticket.status, releaseId, project]
                     );
                 }
                 ticketCount++;
@@ -199,15 +199,15 @@ async function processDeployment(pipeline, workflow, project = 'YOT') {
                     if (existingPR.rows.length > 0) {
                         await pool.query(
                             `UPDATE pull_requests 
-                             SET title = $1, url = $2, author = $3, release_id = $4
-                             WHERE pr_number = $5`,
-                            [pr.title, pr.url, pr.author, releaseId, pr.number]
+                             SET title = $1, url = $2, author = $3, release_id = $4, project = $5
+                             WHERE pr_number = $6`,
+                            [pr.title, pr.url, pr.author, releaseId, project, pr.number]
                         );
                     } else {
                         await pool.query(
-                            `INSERT INTO pull_requests (pr_number, title, url, author, release_id)
-                             VALUES ($1, $2, $3, $4, $5)`,
-                            [pr.number, pr.title, pr.url, pr.author, releaseId]
+                            `INSERT INTO pull_requests (pr_number, title, url, author, release_id, project)
+                             VALUES ($1, $2, $3, $4, $5, $6)`,
+                            [pr.number, pr.title, pr.url, pr.author, releaseId, project]
                         );
                     }
                     prCount++;

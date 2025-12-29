@@ -56,7 +56,7 @@ export default function Releases() {
 
   const handleReleaseClick = async (release: Release) => {
     try {
-      const data = await API.getReleaseDetails(release.id)
+      const data = await API.getReleaseDetails(release.id, currentProject)
       setSelectedRelease(data.release)
     } catch (error) {
       console.error('Error fetching release details:', error)

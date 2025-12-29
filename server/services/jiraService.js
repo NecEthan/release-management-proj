@@ -4,7 +4,7 @@ async function getJiraTicketsForRelease(version, project = 'YOT') {
     const email = process.env.JIRA_EMAIL;
     const jiraTicketBaseUrl = `${baseUrl}/browse`;
 
-    const jiraProject = project === 'pathways-ui' ? 'PATH' : 'PP';
+    const jiraProject = project === 'pathways-ui' ? 'IDV' : 'PP';
     const jql = `project = ${jiraProject} AND fixVersion = "${version}" order by created DESC`;
     const fields = 'summary,status,priority,assignee,created,updated';
     const url = `${baseUrl}/rest/api/3/search/jql?jql=${encodeURIComponent(jql)}&fields=${fields}&maxResults=50`;
@@ -47,7 +47,7 @@ async function getGitHubCommitsForTicket(ticketKey, project = 'YOT') {
     const githubToken = process.env.GITHUB_TOKEN;
     const githubOrg = process.env.GITHUB_ORG;
     const githubRepo = project === 'pathways-ui' 
-        ? process.env.GITHUB_REPO_PATHWAYS 
+        ? process.env.GITHUB_REPO_PATHWAYS_UI 
         : process.env.GITHUB_REPO_YOT;
 
     if (!githubToken || !githubOrg || !githubRepo) {
@@ -64,7 +64,6 @@ async function getGitHubCommitsForTicket(ticketKey, project = 'YOT') {
     });
 
     if (!response.ok) {
-        console.warn(`GitHub API error for ${ticketKey}: ${response.status} ${response.statusText}`);
         return [];
     }
 

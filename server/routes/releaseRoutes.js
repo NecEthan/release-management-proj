@@ -116,7 +116,7 @@ router.get('/environments', async (req, res) => {
                 CASE name 
                     WHEN 'Develop' THEN 1
                     WHEN 'Release' THEN 2
-                    WHEN 'Release-candidate' THEN 3
+                    WHEN 'Release-Candidate' THEN 3
                     WHEN 'Master' THEN 4
                     ELSE 5
                 END`,
