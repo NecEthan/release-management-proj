@@ -22,6 +22,15 @@ export default function Hotfixes() {
     }
   };
 
+  const handleSync = async () => {
+    try {
+      await API.syncCircleCI(currentProject);
+      await fetchHotfixes();
+    } catch (error) {
+      console.error('Error syncing:', error);
+    }
+  };
+
   const handleHotfixClick = async (hotfix: any) => {
     try {
       const details = await API.getHotfixDetails(hotfix.id);
@@ -35,7 +44,7 @@ export default function Hotfixes() {
     <div className="hotfixes">
       <PageHeader title="Hotfixes"
         description="Monitor and deploy emergency hotfixes"
-        onSync={fetchHotfixes}
+        onSync={handleSync}
       />
 
       <div className="hotfixes-list">

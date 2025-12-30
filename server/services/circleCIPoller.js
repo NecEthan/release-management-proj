@@ -249,9 +249,9 @@ async function processDeployment(pipeline, workflow, project = 'YOT') {
         );
         
         await pool.query(
-            `INSERT INTO deployments (environment_id, release_id, deployed_at, branch, commit_sha)
-             VALUES ($1, $2, $3, $4, $5)`,
-            [environmentId, releaseId, workflow.stopped_at, pipeline.vcs.branch, pipeline.vcs.revision]
+            `INSERT INTO deployments (environment_id, release_id, deployed_at, branch, commit_sha, project)
+             VALUES ($1, $2, $3, $4, $5, $6)`,
+            [environmentId, releaseId, workflow.stopped_at, pipeline.vcs.branch, pipeline.vcs.revision, project]
         );
         
         if (isHotfixDeployment(commitMessage, pipeline.vcs.branch)) {

@@ -26,13 +26,26 @@ export default function Environments() {
     }
   }
 
+  const handleSync = async () => {
+    try {
+      await fetch('http://localhost:5000/api/circleci/poll', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ project: currentProject })
+      });
+      await fetchEnvironments();
+    } catch (error) {
+      console.error('Error syncing:', error);
+    }
+  };
+
   if (loading) return <div>Loading...</div>;
 
   return (
     <div className="environments">
       <PageHeader title="Environments"
        description="Current versions across all environments"
-        onSync={fetchEnvironments}
+        onSync={handleSync}
       />
 
       <div className="environments-container">

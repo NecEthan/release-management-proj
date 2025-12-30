@@ -10,7 +10,6 @@ export default function PageHeader({ title, description, onSync }: PageHeaderPro
         if (!onSync) return;
         setSyncing(true);
         try {
-            await API.syncCircleCI();
             await onSync();
         } catch (error) {
             console.error('Error during sync:', error);

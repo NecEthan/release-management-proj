@@ -22,23 +22,22 @@ async function getJiraTicketsForRelease(version, project = 'YOT') {
 
     const data = await response.json();
     
-    const ticketsWithPRs = await Promise.all(
-        (data.issues || []).map(async (issue) => {
-            const pullRequests = await getGitHubCommitsForTicket(issue.key, project);
-
-            return {
-                key: issue.key,
-                url: `${jiraTicketBaseUrl}/${issue.key}`,
-                summary: issue.fields.summary,
-                status: issue.fields.status.name,
-                priority: issue.fields.priority?.name || 'None',
-                assignee: issue.fields.assignee?.displayName || 'Unassigned',
-                created: issue.fields.created,
-                updated: issue.fields.updated,
-                pullRequests: pullRequests
-            };
-        })
-    );
+    // Process sequentially to respect GitHub API rate limits
+    const ticketsWithPRs = [];
+    for (const issue of data.issues || []) {
+        const pullRequests = await getGitHubCommitsForTicket(issue.key, project);
+        ticketsWithPRs.push({
+            key: issue.key,
+            url: `${jiraTicketBaseUrl}/${issue.key}`,
+            summary: issue.fields.summary,
+            status: issue.fields.status.name,
+            priority: issue.fields.priority?.name || 'None',
+            assignee: issue.fields.assignee?.displayName || 'Unassigned',
+            created: issue.fields.created,
+            updated: issue.fields.updated,
+            pullRequests: pullRequests
+        });
+    }
 
     return { tickets: ticketsWithPRs, total: ticketsWithPRs.length };
 }
