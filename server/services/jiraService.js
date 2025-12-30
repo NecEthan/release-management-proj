@@ -22,7 +22,6 @@ async function getJiraTicketsForRelease(version, project = 'YOT') {
 
     const data = await response.json();
     
-    // Process sequentially to respect GitHub API rate limits
     const ticketsWithPRs = [];
     for (const issue of data.issues || []) {
         const pullRequests = await getGitHubCommitsForTicket(issue.key, project);

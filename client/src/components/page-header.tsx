@@ -1,7 +1,6 @@
 import { useState } from "react";
 import './page-header.css';
 import { PageHeaderProps } from "../types/page-header-props.type";
-import { API } from "../services/api";
 
 export default function PageHeader({ title, description, onSync }: PageHeaderProps) {
     const [syncing, setSyncing] = useState(false);

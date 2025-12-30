@@ -75,13 +75,12 @@ async function pollDeployments(project = 'YOT') {
                     if (deployment) {
                         deployments.push(deployment);
                     }
-                }
+                } 
             }
         }
         
         return deployments;
     } catch (error) {
-        console.error('Error polling CircleCI:', error.message);
         throw error;
     }
 }
@@ -102,120 +101,113 @@ async function processDeployment(pipeline, workflow, project = 'YOT') {
                     [project]
                 );
                 version = devVersion.rows[0]?.current_version;
-                if (!version) {
-                    return null;
-                }
+             
             } else if (environmentName === 'Release') {
                 const devVersion = await pool.query(
                     `SELECT current_version FROM environments WHERE name = 'Develop' AND project = $1`,
                     [project]
                 );
                 version = devVersion.rows[0]?.current_version;
-                if (!version) {
-                    return null;
-                }
             } else if (environmentName === 'Release-Candidate') {
                 const releaseVersion = await pool.query(
                     `SELECT current_version FROM environments WHERE name = 'Release' AND project = $1`,
                     [project]
                 );
                 version = releaseVersion.rows[0]?.current_version;
-                if (!version) {
-                    return null;
-                }
+               
             } else if (environmentName === 'Master') {
                 const rcVersion = await pool.query(
                     `SELECT current_version FROM environments WHERE name = 'Release-Candidate' AND project = $1`,
                     [project]
                 );
                 version = rcVersion.rows[0]?.current_version;
-                if (!version) {
-                    return null;
-                }
-            } else {
-                return null;
+                
             }
+            
         }
         
-        let releaseResult = await pool.query(
-            'SELECT id FROM releases WHERE version = $1 AND project = $2',
-            [version, project]
-        );
+        let releaseId = null;
         
-        let releaseId;
-        if (releaseResult.rows.length === 0) {
-            const newRelease = await pool.query(
-                `INSERT INTO releases (version, status, release_date, project)
-                 VALUES ($1, 'active', NOW(), $2)
-                 RETURNING id`,
+        if (version) {
+            let releaseResult = await pool.query(
+                'SELECT id FROM releases WHERE version = $1 AND project = $2',
                 [version, project]
             );
-            releaseId = newRelease.rows[0].id;
-        } else {
-            releaseId = releaseResult.rows[0].id;
-        }
-        
-        try {
-            let jiraVersion = project === 'pathways-ui' ? `${version} (MM)` : `${version} (${project})`;
-            let { tickets } = await jiraService.getJiraTicketsForRelease(jiraVersion, project);
             
-            if (!tickets || tickets.length === 0) {
-                jiraVersion = version;
-                const result = await jiraService.getJiraTicketsForRelease(jiraVersion, project);
-                tickets = result.tickets;
+            if (releaseResult.rows.length === 0) {
+                const newRelease = await pool.query(
+                    `INSERT INTO releases (version, status, release_date, project)
+                     VALUES ($1, 'active', NOW(), $2)
+                     RETURNING id`,
+                    [version, project]
+                );
+                releaseId = newRelease.rows[0].id;
+            } else {
+                releaseId = releaseResult.rows[0].id;
             }
             
-            let ticketCount = 0;
-            let prCount = 0;
-            
-            for (const ticket of tickets) {
-                const existingTicket = await pool.query(
-                    `SELECT id FROM jira_tickets WHERE jira_key = $1`,
-                    [ticket.key]
-                );
+            try {
+                let jiraVersion = project === 'pathways-ui' ? `${version} (MM)` : `${version} (${project})`;
+                let { tickets } = await jiraService.getJiraTicketsForRelease(jiraVersion, project);
                 
-                if (existingTicket.rows.length > 0) {
-                    await pool.query(
-                        `UPDATE jira_tickets 
-                         SET status = $1, summary = $2, url = $3, release_id = $4, project = $5
-                         WHERE jira_key = $6`,
-                        [ticket.status, ticket.summary, ticket.url, releaseId, project, ticket.key]
-                    );
-                } else {
-                    await pool.query(
-                        `INSERT INTO jira_tickets (jira_key, summary, url, status, release_id, project)
-                         VALUES ($1, $2, $3, $4, $5, $6)`,
-                        [ticket.key, ticket.summary, ticket.url, ticket.status, releaseId, project]
-                    );
+                if (!tickets || tickets.length === 0) {
+                    jiraVersion = version;
+                    const result = await jiraService.getJiraTicketsForRelease(jiraVersion, project);
+                    tickets = result.tickets;
                 }
-                ticketCount++;
                 
-                for (const pr of ticket.pullRequests) {
-                    const existingPR = await pool.query(
-                        `SELECT id FROM pull_requests WHERE pr_number = $1`,
-                        [pr.number]
+                let ticketCount = 0;
+                let prCount = 0;
+                
+                for (const ticket of tickets) {
+                    const existingTicket = await pool.query(
+                        `SELECT id FROM jira_tickets WHERE jira_key = $1`,
+                        [ticket.key]
                     );
                     
-                    if (existingPR.rows.length > 0) {
+                    if (existingTicket.rows.length > 0) {
                         await pool.query(
-                            `UPDATE pull_requests 
-                             SET title = $1, url = $2, author = $3, release_id = $4, project = $5
-                             WHERE pr_number = $6`,
-                            [pr.title, pr.url, pr.author, releaseId, project, pr.number]
+                            `UPDATE jira_tickets 
+                             SET status = $1, summary = $2, url = $3, release_id = $4, project = $5
+                             WHERE jira_key = $6`,
+                            [ticket.status, ticket.summary, ticket.url, releaseId, project, ticket.key]
                         );
                     } else {
                         await pool.query(
-                            `INSERT INTO pull_requests (pr_number, title, url, author, release_id, project)
+                            `INSERT INTO jira_tickets (jira_key, summary, url, status, release_id, project)
                              VALUES ($1, $2, $3, $4, $5, $6)`,
-                            [pr.number, pr.title, pr.url, pr.author, releaseId, project]
+                            [ticket.key, ticket.summary, ticket.url, ticket.status, releaseId, project]
                         );
                     }
-                    prCount++;
+                    ticketCount++;
+                    
+                    for (const pr of ticket.pullRequests) {
+                        const existingPR = await pool.query(
+                            `SELECT id FROM pull_requests WHERE pr_number = $1`,
+                            [pr.number]
+                        );
+                        
+                        if (existingPR.rows.length > 0) {
+                            await pool.query(
+                                `UPDATE pull_requests 
+                                 SET title = $1, url = $2, author = $3, release_id = $4, project = $5
+                                 WHERE pr_number = $6`,
+                                [pr.title, pr.url, pr.author, releaseId, project, pr.number]
+                            );
+                        } else {
+                            await pool.query(
+                                `INSERT INTO pull_requests (pr_number, title, url, author, release_id, project)
+                                 VALUES ($1, $2, $3, $4, $5, $6)`,
+                                [pr.number, pr.title, pr.url, pr.author, releaseId, project]
+                            );
+                        }
+                        prCount++;
+                    }
                 }
+                
+            } catch (error) {
+                console.error(`Failed to fetch Jira tickets for ${version}: ${error.message}`);
             }
-            
-        } catch (error) {
-            console.error(`Failed to fetch Jira tickets for ${version}: ${error.message}`);
         }
         
         const existing = await pool.query(
@@ -241,12 +233,21 @@ async function processDeployment(pipeline, workflow, project = 'YOT') {
         
         const environmentId = envResult.rows[0].id;
         
-        await pool.query(
-            `UPDATE environments 
-             SET current_version = $1, last_deployed_at = $2
-             WHERE id = $3`,
-            [version, workflow.stopped_at, environmentId]
-        );
+        if (version) {
+            await pool.query(
+                `UPDATE environments 
+                 SET current_version = $1, last_deployed_at = $2
+                 WHERE id = $3`,
+                [version, workflow.stopped_at, environmentId]
+            );
+        } else {
+            await pool.query(
+                `UPDATE environments 
+                 SET last_deployed_at = $1
+                 WHERE id = $2`,
+                [workflow.stopped_at, environmentId]
+            );
+        }
         
         await pool.query(
             `INSERT INTO deployments (environment_id, release_id, deployed_at, branch, commit_sha, project)
@@ -254,7 +255,7 @@ async function processDeployment(pipeline, workflow, project = 'YOT') {
             [environmentId, releaseId, workflow.stopped_at, pipeline.vcs.branch, pipeline.vcs.revision, project]
         );
         
-        if (isHotfixDeployment(commitMessage, pipeline.vcs.branch)) {
+        if (releaseId && isHotfixDeployment(commitMessage, pipeline.vcs.branch)) {
             await pool.query(
                 `INSERT INTO hotfixes (release_id, title, description, status, created_at, project)
                  VALUES ($1, $2, $3, 'deployed', $4, $5)

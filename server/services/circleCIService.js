@@ -6,6 +6,7 @@ async function getEnvironmentVersions(project = 'YOT') {
         ? process.env.CIRCLECI_PROJECT_SLUG_PATHWAYS_UI 
         : process.env.CIRCLECI_PROJECT_SLUG_YOT;
 
+
     if (!token || !projectSlug) {
         throw new Error(`Missing environment variables for project: ${project}`);
     }

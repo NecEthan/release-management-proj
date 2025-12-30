@@ -47,8 +47,8 @@ export const API = {
         return response.json();
     },
 
-    async getDeploymentDetails(id: number) {
-        const response = await fetch(`${API_BASE_URL}/deployments/${id}`);
+    async getDeploymentDetails(id: number, currentProject: string) {
+        const response = await fetch(`${API_BASE_URL}/deployments/${id}?project=${currentProject}`);
         if (!response.ok) {
             throw new Error('Failed to fetch deployment details');
         }

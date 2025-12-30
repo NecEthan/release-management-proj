@@ -57,7 +57,7 @@ export default function Environments() {
           environments.map((env) => (
           <div key={env.id} className="env-card">
             <div className="env-name">{env.name}</div>
-            <div className="env-version">{env.current_version}</div>
+            <div className="env-version">{env.current_version || 'No version'}</div>
             <div className="env-deployed">
               <span className="deployed-label">Last Deployed:</span>
               <span className="deployed-time">

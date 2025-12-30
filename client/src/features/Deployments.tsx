@@ -55,7 +55,7 @@ export default function Deployments() {
 
     const handleDeploymentClick = async (deployment: Deployment) => {
         try {
-            const data = await API.getDeploymentDetails(deployment.id);
+            const data = await API.getDeploymentDetails(deployment.id, project.currentProject);
             setSelectedDeployment(data.deployment);
         } catch (error) {
             console.error('Error fetching deployment details:', error);
@@ -73,7 +73,7 @@ export default function Deployments() {
         }
 
         const filtered = deployments.filter(deployment => 
-            deployment.release_version.toLowerCase().includes(query.toLowerCase()) ||
+            (deployment.release_version && deployment.release_version.toLowerCase().includes(query.toLowerCase())) ||
             deployment.environment.toLowerCase().includes(query.toLowerCase())
         );
         setFilteredDeployments(filtered);
@@ -119,7 +119,9 @@ export default function Deployments() {
                                 {getEnvironmentLabel(deployment.environment)}
                             </div>
                             <div className="deployment-info">
-                                <div className="deployment-version">{deployment.release_version}</div>
+                                <div className="deployment-version">
+                                    {deployment.release_version || 'No version'}
+                                </div>
                                 <div className="deployment-branch">
                                     <svg className="icon" viewBox="0 0 16 16" fill="currentColor">
                                         <path d="M11.75 2.5a.75.75 0 100 1.5.75.75 0 000-1.5zm-2.25.75a2.25 2.25 0 113 2.122V6A2.5 2.5 0 0110 8.5H6a1 1 0 00-1 1v1.128a2.251 2.251 0 11-1.5 0V5.372a2.25 2.25 0 111.5 0v1.836A2.492 2.492 0 016 7h4a1 1 0 001-1v-.628A2.25 2.25 0 019.5 3.25zM4.25 12a.75.75 0 100 1.5.75.75 0 000-1.5zM3.5 3.25a.75.75 0 111.5 0 .75.75 0 01-1.5 0z"></path>
@@ -188,7 +190,7 @@ export default function Deployments() {
                             <div className="detail-section">
                                 <h3>Release Version</h3>
                                 <div className="detail-value version-text">
-                                    {selectedDeployment.release_version}
+                                    {selectedDeployment.release_version || 'No version (deployment only)'}
                                 </div>
                             </div>
 
