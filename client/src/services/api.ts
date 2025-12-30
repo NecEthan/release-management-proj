@@ -68,8 +68,8 @@ export const API = {
         return response.json();
     },
 
-    async getHotfixDetails(id: number) {
-        const response = await fetch(`${API_BASE_URL}/hotfixes/${id}`);
+    async getHotfixDetails(id: number, currentProject: string) {
+        const response = await fetch(`${API_BASE_URL}/hotfixes/${id}?project=${currentProject}`);
         if (!response.ok) {
             throw new Error('Failed to fetch hotfix details');
         }

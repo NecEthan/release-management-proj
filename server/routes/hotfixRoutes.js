@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
                 e.name as environment_name
              FROM hotfixes h
              LEFT JOIN releases r ON h.release_id = r.id
-             LEFT JOIN environments e ON h.environment_id = e.id
+             LEFT JOIN environments e ON r.environment_id = e.id
              WHERE h.project = $1
              ORDER BY h.created_at DESC`,
             [project]
@@ -44,7 +44,7 @@ router.get('/:id', async (req, res) => {
                 e.name as environment_name
              FROM hotfixes h
              LEFT JOIN releases r ON h.release_id = r.id
-             LEFT JOIN environments e ON h.environment_id = e.id
+             LEFT JOIN environments e ON r.environment_id = e.id
              WHERE h.id = $1 AND h.project = $2`,
             [id, project]
         );
@@ -56,14 +56,24 @@ router.get('/:id', async (req, res) => {
         const hotfix = hotfixResult.rows[0];
         
         if (hotfix.release_id) {
+            const searchText = `${hotfix.title || ''} ${hotfix.description || ''}`;
+            
             const ticketsResult = await pool.query(
-                `SELECT * FROM jira_tickets WHERE release_id = $1 AND project = $2 ORDER BY jira_key`,
-                [hotfix.release_id, project]
+                `SELECT * FROM jira_tickets 
+                 WHERE release_id = $1 
+                 AND project = $2 
+                 AND $3 ILIKE '%' || jira_key || '%'
+                 ORDER BY jira_key`,
+                [hotfix.release_id, project, searchText]
             );
             
             const prsResult = await pool.query(
-                `SELECT * FROM pull_requests WHERE release_id = $1 AND project = $2 ORDER BY pr_number`,
-                [hotfix.release_id, project]
+                `SELECT * FROM pull_requests 
+                 WHERE release_id = $1 
+                 AND project = $2 
+                 AND $3 ILIKE '%#' || pr_number || '%'
+                 ORDER BY pr_number`,
+                [hotfix.release_id, project, searchText]
             );
             
             hotfix.jiraTickets = ticketsResult.rows;

@@ -9,7 +9,6 @@ router.get('/environments', async (req, res) => {
         const environments = await circleCIService.getEnvironmentVersions();
         res.json(environments);
     } catch (error) {
-        console.error('Error in /environments:', error.message);
         res.status(500).json({ error: 'Failed to fetch environment versions' });
     }
 });

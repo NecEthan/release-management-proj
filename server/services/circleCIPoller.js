@@ -54,7 +54,7 @@ function mapWorkflowToEnvironment(workflowName, branch) {
     
     if (name === 'testing') return 'Release';
     if (name === 'development' || branchName === 'develop') return 'Develop';
-    if (name === 'preprod' || branchName === 'release-candidate') return 'Release-candidate';
+    if (name === 'preprod' || branchName === 'release-candidate') return 'Release-Candidate';
     if (name === 'production' || branchName === 'master') return 'Master';
     
     return 'Develop';
@@ -159,6 +159,14 @@ async function processDeployment(pipeline, workflow, project = 'YOT') {
                 let ticketCount = 0;
                 let prCount = 0;
                 
+                await pool.query(
+                    `DELETE FROM jira_tickets 
+                     WHERE release_id = $1 
+                     AND project = $2 
+                     AND jira_key NOT IN (${tickets.length > 0 ? tickets.map((_, i) => `$${i + 3}`).join(',') : 'NULL'})`,
+                    [releaseId, project, ...tickets.map(t => t.key)]
+                );
+                
                 for (const ticket of tickets) {
                     const existingTicket = await pool.query(
                         `SELECT id FROM jira_tickets WHERE jira_key = $1`,
@@ -180,6 +188,16 @@ async function processDeployment(pipeline, workflow, project = 'YOT') {
                         );
                     }
                     ticketCount++;
+                    
+                    if (ticket.pullRequests.length > 0) {
+                        await pool.query(
+                            `DELETE FROM pull_requests 
+                             WHERE release_id = $1 
+                             AND project = $2 
+                             AND pr_number NOT IN (${ticket.pullRequests.map((_, i) => `$${i + 3}`).join(',')})`,
+                            [releaseId, project, ...ticket.pullRequests.map(pr => pr.number)]
+                        );
+                    }
                     
                     for (const pr of ticket.pullRequests) {
                         const existingPR = await pool.query(
@@ -244,7 +262,7 @@ async function processDeployment(pipeline, workflow, project = 'YOT') {
             await pool.query(
                 `UPDATE environments 
                  SET last_deployed_at = $1
-                 WHERE id = $2`,
+                 WHERE id = $2 AND current_version IS NOT NULL`,
                 [workflow.stopped_at, environmentId]
             );
         }
