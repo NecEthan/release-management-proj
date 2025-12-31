@@ -377,3 +377,214 @@
     color: #6b7280;
     cursor: default;
 }
+
+.controls-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.filters {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-group,
+.sort-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-group label,
+.sort-group label {
+  font-size: 0.9rem;
+  color: rgba(245, 245, 245, 0.7);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.filter-select,
+.sort-select {
+  padding: 8px 12px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: #f5f5f5;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 150px;
+}
+
+.filter-select:hover,
+.sort-select:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.filter-select:focus,
+.sort-select:focus {
+  outline: none;
+  border-color: #4a9eff;
+  box-shadow: 0 0 0 2px rgba(74, 158, 255, 0.2);
+}
+
+.filter-select option,
+.sort-select option {
+  background-color: #1a2a3a;
+  color: #f5f5f5;
+  padding: 8px;
+}
+
+.filter-select option:hover,
+.sort-select option:hover {
+  background-color: #2a3a4a;
+  color: #ff8c00;
+}
+
+.filter-select option:checked,
+.sort-select option:checked {
+  background-color: #ff8c00;
+  color: #1a2a3a;
+}
+
+.filter-icon {
+  width: 16px;
+  height: 16px;
+  color: #ff8c00;
+  flex-shrink: 0;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-group label {
+  font-size: 0.9rem;
+  color: rgba(245, 245, 245, 0.9);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.clear-filter-btn {
+  padding: 6px 10px;
+  background-color: rgba(255, 140, 0, 0.2);
+  border: 1px solid rgba(255, 140, 0, 0.4);
+  border-radius: 4px;
+  color: #ff8c00;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: bold;
+}
+
+.clear-filter-btn:hover {
+  background-color: rgba(255, 140, 0, 0.3);
+  border-color: rgba(255, 140, 0, 0.6);
+}
+
+.sorting {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.sort-order-btn {
+  padding: 8px 16px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: #f5f5f5;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 44px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sort-order-btn:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.sort-order-btn:active {
+  transform: translateY(0);
+}
+
+.filter-input {
+    padding: 6px 10px;
+    background-color: #1a2a3a;
+    border: 1px solid #2a3f5f;
+    border-radius: 4px;
+    color: #ffffff;
+    font-size: 14px;
+    margin: 0 8px;
+    cursor: pointer;
+}
+
+.filter-input:hover {
+    border-color: #ff8c00;
+}
+
+.filter-input:focus {
+    outline: none;
+    border-color: #ff8c00;
+    box-shadow: 0 0 0 2px rgba(255, 140, 0, 0.2);
+}
+
+.clear-date-btn {
+    background-color: transparent;
+    border: 1px solid #2a3f5f;
+    color: #999;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 8px;
+    transition: all 0.2s;
+}
+
+.clear-date-btn:hover {
+    background-color: #ff8c00;
+    border-color: #ff8c00;
+    color: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .controls-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filters,
+  .sorting {
+    width: 100%;
+  }
+
+  .filter-group,
+  .sort-group {
+    flex: 1;
+  }
+
+  .filter-select,
+  .sort-select {
+    flex: 1;
+    min-width: 0;
+  }
+}

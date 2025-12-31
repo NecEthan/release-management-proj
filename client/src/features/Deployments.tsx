@@ -13,14 +13,26 @@ export default function Deployments() {
     const [error, setError] = useState<string | null>(null);
     const [selectedDeployment, setSelectedDeployment] = useState<Deployment | null>(null);
 
+    const [statusFilter, setStatusFilter] = useState<string>('all');
+
     const [currentPage, setCurrentPage] = useState(0);
     const itemsPerPage = 5;
+
+    const [environmentFilter, setEnvironmentFilter] = useState<string>('all');
+    const [dateRange, setDateRange] = useState({
+        start: '',
+        end: ''
+    });
 
     const project = useProject();
 
     useEffect(() => {
         fetchDeployments();
     }, [project.currentProject]);
+        
+    useEffect(() => {
+        applyFilterAndSort();
+    }, [environmentFilter, deployments, dateRange]);
 
     const fetchDeployments = async () => {
         try {
@@ -45,6 +57,30 @@ export default function Deployments() {
         });
     };
 
+    const applyFilterAndSort = () => {
+        let filtered = [...deployments];
+
+        if (environmentFilter !== 'all') {
+            filtered = filtered.filter(d => d.environment === environmentFilter);
+        }
+
+        if (dateRange.start) {
+            const startDate = new Date(dateRange.start);
+            startDate.setHours(0, 0, 0, 0);
+            filtered = filtered.filter(d => new Date(d.deployed_at) >= startDate);
+        }
+
+        if (dateRange.end) {
+            const endDate = new Date(dateRange.end);
+            endDate.setHours(23, 59, 59, 999);
+            filtered = filtered.filter(d => new Date(d.deployed_at) <= endDate);
+        }
+
+        setFilteredDeployments(filtered);
+        setCurrentPage(0);
+
+    }
+
     const getEnvironmentLabel = (env: string) => {
         return env;
     };
@@ -67,21 +103,40 @@ export default function Deployments() {
     };
 
     const handleSearch = (query: string) => {
-        if (!query.trim()) {
-            setFilteredDeployments(deployments);
-            return;
-        }
+    let filtered = [...deployments];
 
-        const filtered = deployments.filter(deployment => 
-            (deployment.release_version && deployment.release_version.toLowerCase().includes(query.toLowerCase())) ||
-            deployment.environment.toLowerCase().includes(query.toLowerCase())
-        );
-        setFilteredDeployments(filtered);
+    if (environmentFilter !== 'all') {
+        filtered = filtered.filter(d => d.environment === environmentFilter);
     }
+
+    if (dateRange.start) {
+        const startDate = new Date(dateRange.start);
+        startDate.setHours(0, 0, 0, 0);
+        filtered = filtered.filter(d => new Date(d.deployed_at) >= startDate);
+    }
+
+    if (dateRange.end) {
+        const endDate = new Date(dateRange.end);
+        endDate.setHours(23, 59, 59, 999);
+        filtered = filtered.filter(d => new Date(d.deployed_at) <= endDate);
+    }
+
+    if (query.trim()) {
+        filtered = filtered.filter(deployment => 
+            (deployment.release_version && deployment.release_version.toLowerCase().includes(query.toLowerCase())) ||
+            deployment.commit_sha.toLowerCase().includes(query.toLowerCase())
+        );
+    }
+
+    setFilteredDeployments(filtered);
+    setCurrentPage(0);
+}
 
     const pageCount = Math.ceil(filteredDeployments.length / itemsPerPage);
     const offset = currentPage * itemsPerPage;
     const currentPageDeployments = filteredDeployments.slice(offset, offset + itemsPerPage);
+
+    const uniqueEnvironments = Array.from(new Set(deployments.map(d => d.environment)));
 
     if (loading) {
         return <div className="deployments-container">Loading deployments...</div>;
@@ -100,10 +155,49 @@ export default function Deployments() {
             
             <SearchBar 
                 onSearch={handleSearch} 
-                placeholder="Search deployments by version or environment..."
+                placeholder="Search deployments by version or commit..."
                 showResults={true}
                 resultCount={filteredDeployments.length}
             />
+
+            <div className="controls-bar">
+                <div className="filters">
+                    <div className="filter-group">
+                        <svg className="filter-icon" viewBox="0 0 16 16" fill="currentColor">
+                            <path d="M.5 3a.5.5 0 0 0 0 1h15a.5.5 0 0 0 0-1H.5ZM3 6.5a.5.5 0 0 0 0 1h10a.5.5 0 0 0 0-1H3ZM6 10a.5.5 0 0 0 0 1h4a.5.5 0 0 0 0-1H6Z"/>
+                        </svg>
+
+                        <label htmlFor="date-start">From: </label>
+                        <input 
+                        type="date"
+                        id="date-start"
+                        value={dateRange.start}
+                        onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value}))}
+                        className="filter-input" />
+
+                        <label htmlFor="date-end">To: </label>
+                        <input type="date"
+                        id="date-end"
+                        value={dateRange.end}
+                        onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value}))}
+                        className="filter-input" />
+
+                        <label htmlFor="environment-filter">Filter by Environment:</label>
+                        <select
+                        id="environment-filter"
+                        value={environmentFilter}
+                        onChange={(e) => setEnvironmentFilter(e.target.value)}
+                        className="filter-select"
+                        >
+                        <option value="all">All Environments</option>
+                        {uniqueEnvironments.map(env => (
+                            <option key={env} value={env}>{env}</option>
+                        ))}
+                        </select>
+                    </div>
+
+                </div>
+            </div>
 
             <div className="deployments-list">
                 {filteredDeployments.length === 0 ? (
