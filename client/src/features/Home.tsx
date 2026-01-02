@@ -10,12 +10,58 @@ export default function Home() {
   const [productionVersion, setProductionVersion] = useState<string>('');
   const [releasesThisMonth, setReleasesThisMonth] = useState<number>(0);
   const [releases, setReleases] = useState<any[]>([]);
+  const [lastDeployedTime, setLastDeploymentTime] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    fetchProductionVersion();
-    fetchReleasesThisMonth();
-    fetchReleases();
+    fetchALlDAta();
   }, [currentProject]);
+
+
+  const fetchALlDAta = async () => {
+    setLoading(true);
+    await fetchProductionVersion();
+    await fetchReleasesThisMonth();
+    await fetchReleases();
+    await fetchLastDeployment();
+    setLoading(false);
+  };
+
+  const fetchLastDeployment = async () => {
+
+    try {
+      const data = await API.getDeployments(currentProject);
+
+      if (data.deployments && data.deployments.length > 0) {
+        const lastDeployment = data.deployments[0];
+        const deployedAt = new Date(lastDeployment.deployed_at);
+        const now = new Date();
+        const diffMs = now.getTime() - deployedAt.getTime();
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMs / 3600000);
+        const diffDays = Math.floor(diffMs / 86400000);
+
+        if (diffDays > 0) {
+          setLastDeploymentTime(`${diffDays}d ago`);
+        } else if (diffHours > 0) {
+          setLastDeploymentTime(`${diffHours}h ago`);
+        } else if (diffMins > 0) {
+          setLastDeploymentTime(`${diffMins}m ago`);
+        } else {
+          setLastDeploymentTime('Just now');
+        }
+      } else {
+        setLastDeploymentTime('N/A');
+      }
+    }
+    catch (error) {
+      console.error('Error fetching last deployment:', error);
+      setLastDeploymentTime('Error');
+    }
+
+  }
+
+  
 
    const fetchReleases = async () => {
       try {
@@ -24,7 +70,7 @@ export default function Home() {
       } catch (error) {
         console.error('Error fetching releases:', error)
       } 
-    }
+    };
 
   const fetchProductionVersion = async () => {
     try {
@@ -53,6 +99,7 @@ export default function Home() {
       await fetchProductionVersion();
       await fetchReleasesThisMonth();
       await fetchReleases();
+      await fetchLastDeployment();
     } catch (error) {
       console.error('Error syncing with CircleCI:', error);
     }
@@ -61,9 +108,20 @@ export default function Home() {
 
    const stats = {
     currentLiveVersion: productionVersion,
-    nextReleaseVersion: 'v2.5.0',
+    lastDeployedTime: lastDeployedTime,
     releasesThisMonth: releasesThisMonth,
     activeHotfixes: 2,
+  }
+
+  if (loading) {
+    return (
+      <div className="home">
+         <div className="loading-container">
+          <div className="loading-spinner"></div>
+          <p>Loading data...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -76,8 +134,8 @@ export default function Home() {
           <div className="stat-value">{stats.currentLiveVersion}</div>
         </div>
         <div className="stat-card">
-          <div className="stat-label">Next Release</div>
-          <div className="stat-value">{stats.nextReleaseVersion}</div>
+          <div className="stat-label">Last Deployed</div>
+          <div className="stat-value">{stats.lastDeployedTime}</div>
         </div>
         <div className="stat-card">
           <div className="stat-label">Releases This Month</div>

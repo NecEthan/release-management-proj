@@ -38,11 +38,6 @@ export default function Analytics() {
     return acc;
   }, {} as Record<string, number>);
 
-  const branchCounts = deploymentsInRange.reduce((acc, d) => {
-    acc[d.branch] = (acc[d.branch] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-
   return (
     <div className="analytics">
       <PageHeader 
@@ -87,11 +82,6 @@ export default function Analytics() {
         <div className="stat-card">
           <div className="stat-value">{Object.keys(environmentCounts).length}</div>
           <div className="stat-label">Environments</div>
-        </div>
-
-        <div className="stat-card">
-          <div className="stat-value">{Object.keys(branchCounts).length}</div>
-          <div className="stat-label">Unique Branches</div>
         </div>
       </div>
 

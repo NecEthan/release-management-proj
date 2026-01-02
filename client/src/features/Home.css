@@ -21,6 +21,7 @@
 
 .stat-card {
   flex: 1 1 220px;
+  max-width: 280px;
   min-width: 220px;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -146,3 +147,4 @@
   color: rgba(245, 245, 245, 0.8);
   line-height: 1.5;
 }
+
