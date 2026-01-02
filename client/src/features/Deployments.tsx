@@ -32,7 +32,12 @@ export default function Deployments() {
         
     useEffect(() => {
         applyFilterAndSort();
-    }, [environmentFilter, deployments, dateRange]);
+        setCurrentPage(0);
+    }, [environmentFilter, dateRange]);
+
+    useEffect(() => {
+        applyFilterAndSort();
+    }, [deployments]);
 
     const fetchDeployments = async () => {
         try {
@@ -77,8 +82,6 @@ export default function Deployments() {
         }
 
         setFilteredDeployments(filtered);
-        setCurrentPage(0);
-
     }
 
     const getEnvironmentLabel = (env: string) => {
@@ -102,35 +105,40 @@ export default function Deployments() {
         setSelectedDeployment(null);
     };
 
+    const getGitHubCommitUrl = (commitSha: string) => {
+        const repo = project.currentProject === 'pathways-ui' ? 'pathways-ui' : 'yot-ui';
+        return `https://github.com/Northgate-Public-Services/${repo}/commit/${commitSha}`;
+    };
+
     const handleSearch = (query: string) => {
-    let filtered = [...deployments];
+        let filtered = [...deployments];
 
-    if (environmentFilter !== 'all') {
-        filtered = filtered.filter(d => d.environment === environmentFilter);
+        if (environmentFilter !== 'all') {
+            filtered = filtered.filter(d => d.environment === environmentFilter);
+        }
+
+        if (dateRange.start) {
+            const startDate = new Date(dateRange.start);
+            startDate.setHours(0, 0, 0, 0);
+            filtered = filtered.filter(d => new Date(d.deployed_at) >= startDate);
+        }
+
+        if (dateRange.end) {
+            const endDate = new Date(dateRange.end);
+            endDate.setHours(23, 59, 59, 999);
+            filtered = filtered.filter(d => new Date(d.deployed_at) <= endDate);
+        }
+
+        if (query.trim()) {
+            filtered = filtered.filter(deployment => 
+                (deployment.release_version && deployment.release_version.toLowerCase().includes(query.toLowerCase())) ||
+                deployment.commit_sha.toLowerCase().includes(query.toLowerCase())
+            );
+            setCurrentPage(0);
+        }
+
+        setFilteredDeployments(filtered);
     }
-
-    if (dateRange.start) {
-        const startDate = new Date(dateRange.start);
-        startDate.setHours(0, 0, 0, 0);
-        filtered = filtered.filter(d => new Date(d.deployed_at) >= startDate);
-    }
-
-    if (dateRange.end) {
-        const endDate = new Date(dateRange.end);
-        endDate.setHours(23, 59, 59, 999);
-        filtered = filtered.filter(d => new Date(d.deployed_at) <= endDate);
-    }
-
-    if (query.trim()) {
-        filtered = filtered.filter(deployment => 
-            (deployment.release_version && deployment.release_version.toLowerCase().includes(query.toLowerCase())) ||
-            deployment.commit_sha.toLowerCase().includes(query.toLowerCase())
-        );
-    }
-
-    setFilteredDeployments(filtered);
-    setCurrentPage(0);
-}
 
     const pageCount = Math.ceil(filteredDeployments.length / itemsPerPage);
     const offset = currentPage * itemsPerPage;
@@ -305,7 +313,7 @@ export default function Deployments() {
                                         <path d="M11.93 8.5a4.002 4.002 0 01-7.86 0H.75a.75.75 0 010-1.5h3.32a4.002 4.002 0 017.86 0h3.32a.75.75 0 010 1.5h-3.32zM8 6a2 2 0 100 4 2 2 0 000-4z"></path>
                                     </svg>
                                     <a 
-                                        href={`https://github.com/Northgate-Public-Services/yot-ui/commit/${selectedDeployment.commit_sha}`}
+                                        href={getGitHubCommitUrl(selectedDeployment.commit_sha)}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="commit-link"
@@ -321,6 +329,51 @@ export default function Deployments() {
                                     {formatDate(selectedDeployment.deployed_at)}
                                 </div>
                             </div>
+
+                            {selectedDeployment.release_version && (
+                                <>
+                                    {selectedDeployment.jiraTickets && selectedDeployment.jiraTickets.length > 0 && (
+                                        <div className="detail-section">
+                                            <h3>Related Jira Tickets</h3>
+                                            <div className="tickets-list">
+                                                {selectedDeployment.jiraTickets.map((ticket) => (
+                                                    <a
+                                                        key={ticket.id}
+                                                        href={ticket.url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="ticket-item"
+                                                    >
+                                                        <span className="ticket-key">{ticket.jira_key}</span>
+                                                        <span className="ticket-summary">{ticket.summary}</span>
+                                                    </a>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {selectedDeployment.pullRequests && selectedDeployment.pullRequests.length > 0 && (
+                                        <div className="detail-section">
+                                            <h3>Related Pull Requests</h3>
+                                            <div className="pr-list">
+                                                {selectedDeployment.pullRequests.map((pr) => (
+                                                    <a
+                                                        key={pr.id}
+                                                        href={pr.url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="pr-item"
+                                                    >
+                                                        <span className="pr-number">#{pr.pr_number}</span>
+                                                        <span className="pr-title">{pr.title}</span>
+                                                        <span className="pr-author">by {pr.author}</span>
+                                                    </a>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>

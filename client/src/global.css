@@ -76,7 +76,7 @@ a, button {
 .dialog {
   border: 1px solid rgba(255, 140, 0, 0.2);
   border-radius: 16px;
-  width: calc(100% - 40px);
+  width: 100%;
   max-width: 100%;
   max-height: 90vh;
   display: flex;
