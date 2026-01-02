@@ -11,7 +11,6 @@ export default function Home() {
   const [releasesThisMonth, setReleasesThisMonth] = useState<number>(0);
   const [releases, setReleases] = useState<any[]>([]);
   const [lastDeployedTime, setLastDeploymentTime] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     fetchALlDAta();
@@ -19,12 +18,10 @@ export default function Home() {
 
 
   const fetchALlDAta = async () => {
-    setLoading(true);
     await fetchProductionVersion();
     await fetchReleasesThisMonth();
     await fetchReleases();
     await fetchLastDeployment();
-    setLoading(false);
   };
 
   const fetchLastDeployment = async () => {
@@ -111,17 +108,6 @@ export default function Home() {
     lastDeployedTime: lastDeployedTime,
     releasesThisMonth: releasesThisMonth,
     activeHotfixes: 2,
-  }
-
-  if (loading) {
-    return (
-      <div className="home">
-         <div className="loading-container">
-          <div className="loading-spinner"></div>
-          <p>Loading data...</p>
-        </div>
-      </div>
-    )
   }
 
   return (

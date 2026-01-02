@@ -6,7 +6,6 @@ import { useProject } from '../contexts/ProjectContext';
 export default function Environments() {
 
   const [environments, setEnvironments] = useState<Environment[]>([]);
-  const [loading, setLoading] = useState(true);
   const { currentProject } = useProject();
 
   useEffect(() => {
@@ -19,10 +18,8 @@ export default function Environments() {
       const response = await fetch('http://localhost:5000/api/releases/environments?project=' + currentProject);
       const data = await response.json();
       setEnvironments(data.environments);
-      setLoading(false);
     } catch (error) {
       console.error('Error fetching environments:', error);
-      setLoading(false);
     }
   }
 
@@ -38,8 +35,6 @@ export default function Environments() {
       console.error('Error syncing:', error);
     }
   };
-
-  if (loading) return <div>Loading...</div>;
 
   return (
     <div className="environments">

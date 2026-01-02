@@ -9,7 +9,6 @@ import ReactPaginate from 'react-paginate';
 export default function Deployments() {
     const [deployments, setDeployments] = useState<Deployment[]>([]);
     const [filteredDeployments, setFilteredDeployments] = useState<Deployment[]>([]);
-    const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [selectedDeployment, setSelectedDeployment] = useState<Deployment | null>(null);
 
@@ -41,15 +40,12 @@ export default function Deployments() {
 
     const fetchDeployments = async () => {
         try {
-            setLoading(true);
             const data = await API.getDeployments(project.currentProject);
             setDeployments(data.deployments);
             setFilteredDeployments(data.deployments);
             setCurrentPage(0);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to fetch deployments');
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -145,10 +141,6 @@ export default function Deployments() {
     const currentPageDeployments = filteredDeployments.slice(offset, offset + itemsPerPage);
 
     const uniqueEnvironments = Array.from(new Set(deployments.map(d => d.environment)));
-
-    if (loading) {
-        return <div className="deployments-container">Loading deployments...</div>;
-    }
 
     if (error) {
         return <div className="deployments-container error">Error: {error}</div>;

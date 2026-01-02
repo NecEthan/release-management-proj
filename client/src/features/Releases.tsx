@@ -16,7 +16,6 @@ type Release = {
 
 export default function Releases() {
   const [releases, setReleases] = useState<Release[]>([])
-  const [loading, setLoading] = useState(true)
   const [selectedRelease, setSelectedRelease] = useState<any>(null)
   const [activeTab, setActiveTab] = useState<'jira' | 'prs'>('jira')
   const { currentProject } = useProject();
@@ -34,14 +33,11 @@ export default function Releases() {
 
   const fetchReleases = async () => {
     try {
-      setLoading(true);
       const data = await API.getReleases(currentProject);
       setReleases(data.releases);
       setCurrentPage(0);
     } catch (error) {
       console.error('Error fetching releases:', error);
-    } finally {
-      setLoading(false);
     }
   }
 
@@ -70,8 +66,6 @@ export default function Releases() {
   const closeDialog = async () => {
     setSelectedRelease(null)
   }
-
-  if (loading) return <div>Loading...</div>
 
   return (
     <div className="releases">
