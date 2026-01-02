@@ -275,7 +275,7 @@ export default function Deployments() {
 
             {selectedDeployment && (
                 <div className="dialog-overlay" onClick={closeDialog}>
-                    <div className="dialog-content" onClick={(e) => e.stopPropagation()}>
+                    <div className="dialog" onClick={(e) => e.stopPropagation()}>
                         <div className="dialog-header">
                             <h2>Deployment Details</h2>
                             <button className="close-button" onClick={closeDialog}>×</button>
@@ -329,51 +329,6 @@ export default function Deployments() {
                                     {formatDate(selectedDeployment.deployed_at)}
                                 </div>
                             </div>
-
-                            {selectedDeployment.release_version && (
-                                <>
-                                    {selectedDeployment.jiraTickets && selectedDeployment.jiraTickets.length > 0 && (
-                                        <div className="detail-section">
-                                            <h3>Related Jira Tickets</h3>
-                                            <div className="tickets-list">
-                                                {selectedDeployment.jiraTickets.map((ticket) => (
-                                                    <a
-                                                        key={ticket.id}
-                                                        href={ticket.url}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="ticket-item"
-                                                    >
-                                                        <span className="ticket-key">{ticket.jira_key}</span>
-                                                        <span className="ticket-summary">{ticket.summary}</span>
-                                                    </a>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {selectedDeployment.pullRequests && selectedDeployment.pullRequests.length > 0 && (
-                                        <div className="detail-section">
-                                            <h3>Related Pull Requests</h3>
-                                            <div className="pr-list">
-                                                {selectedDeployment.pullRequests.map((pr) => (
-                                                    <a
-                                                        key={pr.id}
-                                                        href={pr.url}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        className="pr-item"
-                                                    >
-                                                        <span className="pr-number">#{pr.pr_number}</span>
-                                                        <span className="pr-title">{pr.title}</span>
-                                                        <span className="pr-author">by {pr.author}</span>
-                                                    </a>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-                                </>
-                            )}
                         </div>
                     </div>
                 </div>

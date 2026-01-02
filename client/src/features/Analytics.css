@@ -103,24 +103,6 @@
   font-size: 1.125rem;
 }
 
-.no-data-message {
-  background: white;
-  padding: 3rem 2rem;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  text-align: center;
-  color: #6b7280;
-}
-
-.no-data-message p {
-  margin: 0.5rem 0;
-  font-size: 1rem;
-}
-
-.no-data-hint {
-  font-size: 0.875rem;
-  color: #9ca3af;
-}
 
 .stats-grid {
   display: grid;

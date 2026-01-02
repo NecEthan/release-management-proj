@@ -86,7 +86,7 @@ export default function Analytics() {
       </div>
 
       {deploymentsInRange.length === 0 && (
-        <div className="no-data-message">
+        <div>
           <p>No deployments found in the selected time range.</p>
           <p className="no-data-hint">Try selecting a longer time period or check if deployments are being tracked.</p>
         </div>

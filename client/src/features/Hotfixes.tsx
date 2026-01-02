@@ -49,7 +49,7 @@ export default function Hotfixes() {
 
       <div className="hotfixes-list">
         {hotfixes.length === 0 ? (
-          <div className="no-data-message">
+          <div >
             No hotfixes found for this project
           </div>
         ) : (
