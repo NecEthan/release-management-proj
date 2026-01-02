@@ -3,6 +3,7 @@ import PageHeader from '../components/page-header'
 import { useProject } from '../contexts/ProjectContext';
 import './Home.css'
 import { API } from '../services/api';
+import { ResponsiveContainer, LineChart, CartesianGrid, Line, Tooltip, XAxis, YAxis } from 'recharts';
 
 export default function Home() {
  
@@ -11,6 +12,7 @@ export default function Home() {
   const [releasesThisMonth, setReleasesThisMonth] = useState<number>(0);
   const [releases, setReleases] = useState<any[]>([]);
   const [lastDeployedTime, setLastDeploymentTime] = useState<string>('');
+  const [chartData, setChartData] = useState<any[]>([]);
 
   useEffect(() => {
     fetchALlDAta();
@@ -22,6 +24,7 @@ export default function Home() {
     await fetchReleasesThisMonth();
     await fetchReleases();
     await fetchLastDeployment();
+    await fetchDeploymentFrequency();
   };
 
   const fetchLastDeployment = async () => {
@@ -58,7 +61,32 @@ export default function Home() {
 
   }
 
-  
+  const fetchDeploymentFrequency = async () => {
+    try {
+      const data = await API.getDeployments(currentProject);
+
+      const last7Days = Array.from({ length: 30 }, (_, i) => {
+        const date = new Date();
+        date.setDate(date.getDate() - (29 - i));
+        return date.toISOString().split('T')[0];
+      });
+
+      const grouped = last7Days.map(date => {
+        const count = data.deployments.filter((d: any) => 
+          d.deployed_at.startsWith(date)
+        ).length;
+        return {
+          date: new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+          deployments: count
+        };
+      })
+
+      setChartData(grouped);
+    } catch (error) {
+      console.error('Error fetching deployment frequency:', error);
+    }
+
+  }
 
    const fetchReleases = async () => {
       try {
@@ -133,20 +161,32 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="releases-section">
-        <h2>Recent Releases</h2>
-        <div className="releases-list">
-          {releases.map((release) => (
-            <div key={release.id} className="release-item">
-              <div className="release-header">
-                <span className="release-version">{release.version}</span>
-              </div>
-              <div className="release-date">{release.date}</div>
-              <div className="release-description">{release.description}</div>
-            </div>
-          ))}
+      <div className="chart-section">
+        <h2>Deployment Frequency (Last 30 Days)</h2>
+        <div className="chart-container">
+          <ResponsiveContainer width="100%" height={300}>
+            <LineChart data={chartData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.1)" />
+              <XAxis dataKey="date" stroke="rgba(255, 255, 255, 0.5)" />
+              <YAxis stroke="rgba(255, 255, 255, 0.5)" style={{ fontSize: 12 }} />
+              <Tooltip contentStyle={{ 
+                  backgroundColor: 'rgba(10, 18, 32, 0.95)', 
+                  border: '1px solid rgba(255, 140, 0, 0.3)',
+                  borderRadius: '8px'
+                }} />
+              <Line  
+              type="monotone" 
+                dataKey="deployments" 
+                stroke="#ff8c00" 
+                strokeWidth={2}
+                dot={{ fill: '#ff8c00', r: 4 }}
+              />
+            </LineChart>
+
+          </ResponsiveContainer>
         </div>
       </div>
+
     </div>
   )
 }

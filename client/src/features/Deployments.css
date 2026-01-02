@@ -2,21 +2,7 @@
     padding: 20px;
 }
 
-.deployments-header {
-    margin-bottom: 32px;
-}
 
-.deployments-header h1 {
-    font-size: 2rem;
-    font-weight: 600;
-    color: #f5f5f5;
-    margin: 0 0 8px 0;
-}
-
-.deployments-subtitle {
-    color: rgba(245, 245, 245, 0.7);
-    margin: 0;
-}
 
 .deployments-list {
     display: flex;
@@ -95,18 +81,7 @@
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.deployment-stats {
-    display: flex;
-    gap: 16px;
-}
 
-.stat {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    color: rgba(245, 245, 245, 0.6);
-    font-size: 0.8rem;
-}
 
 .deployment-time {
     color: rgba(245, 245, 245, 0.6);
