@@ -1,6 +1,6 @@
 import './authentication.css';
 import { useForm } from 'react-hook-form';
-import { FormData } from '../types/form-data.type';
+import { FormData } from '../../types/form-data.type';
 
 export default function Authentication() {
   const { 

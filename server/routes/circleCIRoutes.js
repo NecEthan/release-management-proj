@@ -75,7 +75,6 @@ router.post('/poll', async (req, res) => {
             project
         });
     } catch (error) {
-        console.error(`❌ Error in /poll for project:`, error.message);
         res.status(500).json({ error: error.message });
     }
 });

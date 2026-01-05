@@ -9,7 +9,7 @@ import Analytics from './features/Analytics'
 import MainContent from './components/main-content'
 import MenuKey from './types/menu-key.type'
 import { ProjectProvider } from './contexts/ProjectContext';
-import Authentication from './components/authentication'
+import Authentication from './components/auth/authentication'
 
 export default function App() {
   const [selected, setSelected] = useState<MenuKey>('home');

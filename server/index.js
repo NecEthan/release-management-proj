@@ -1,10 +1,12 @@
 require('dotenv').config();
+require('./cron-jobs/daily-job');
 const express = require('express');
 const cors = require('cors');
 const jiraRoutes = require('./routes/jiraRoutes');
 const releaseRoutes = require('./routes/releaseRoutes');
 const hotfixRoutes = require('./routes/hotfixRoutes');
 const authenticateToken = require('./middleware/auth');
+
 
 const app = express();
 const PORT = process.env.PORT || 5000;

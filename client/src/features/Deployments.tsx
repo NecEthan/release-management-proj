@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { API } from '../services/api';
 import { Deployment } from '../types/deployment.type';
 import './Deployments.css';
@@ -11,8 +11,6 @@ export default function Deployments() {
     const [filteredDeployments, setFilteredDeployments] = useState<Deployment[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [selectedDeployment, setSelectedDeployment] = useState<Deployment | null>(null);
-
-    const [statusFilter, setStatusFilter] = useState<string>('all');
 
     const [currentPage, setCurrentPage] = useState(0);
     const itemsPerPage = 5;

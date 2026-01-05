@@ -12,7 +12,7 @@
     "jsx": "react-jsx",
     "strict": true,
     "allowJs": false,
-    "types": ["react", "react-dom"]
+    "types": ["react", "react-dom", "jest", "node"]
   },
   "include": ["src"]
 }
