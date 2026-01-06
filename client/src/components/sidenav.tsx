@@ -38,6 +38,7 @@ export default function Sidenav({
   const handleLogout = () => {
     localStorage.removeItem('isAuthenticated');
     localStorage.removeItem('username');
+    localStorage.removeItem('token');
     window.location.reload();
   };
 
