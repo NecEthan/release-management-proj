@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { API } from '../services/api';
 import { Deployment } from '../types/deployment.type';
 import './Deployments.css';
-import SearchBar from '../components/search-bar';
+import SearchBar from '../components/search-bar/search-bar';
 import { useProject } from '../contexts/ProjectContext';
 import ReactPaginate from 'react-paginate';
 

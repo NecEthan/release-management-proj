@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import './Releases.css'
-import PageHeader from '../components/page-header'
+import PageHeader from '../components/page-header/page-header'
 import { API } from '../services/api'
 import { useProject } from '../contexts/ProjectContext'
 import ReactPaginate from 'react-paginate'

@@ -15,61 +15,61 @@ router.get('/releases/:version/tickets', async (req, res) => {
     }
 });
 
-router.post('/', async (req, res) => {
+// router.post('/', async (req, res) => {
 
-    const client = await pool.connect();
+//     const client = await pool.connect();
 
-    try {
+//     try {
         
-        const { version } = req.body;
+//         const { version } = req.body;
 
-        await client.query('BEGIN');
+//         await client.query('BEGIN');
 
-        const releaseResult = await client.query(
-            `INSERT INTO releases (version, status, release_date) 
-             VALUES ($1, 'active', NOW()) 
-             ON CONFLICT (version) DO UPDATE SET updated_at = NOW()
-             RETURNING id`,
-            [version]
-        );
+//         const releaseResult = await client.query(
+//             `INSERT INTO releases (version, status, release_date) 
+//              VALUES ($1, 'active', NOW()) 
+//              ON CONFLICT (version) DO UPDATE SET updated_at = NOW()
+//              RETURNING id`,
+//             [version]
+//         );
 
-        const releaseId = releaseResult.rows[0].id;
+//         const releaseId = releaseResult.rows[0].id;
 
-        const { tickets } = await jiraService.getJiraTicketsForRelease(version);
+//         const { tickets } = await jiraService.getJiraTicketsForRelease(version);
 
-        for (const ticket of tickets) {
-            await client.query(
-                `INSERT INTO jira_tickets (jira_key, summary, url, status, release_id)
-                 VALUES ($1, $2, $3, $4, $5)
-                 ON CONFLICT DO NOTHING`,
-                [ticket.key, ticket.summary, ticket.url, ticket.status, releaseId]
-            );
+//         for (const ticket of tickets) {
+//             await client.query(
+//                 `INSERT INTO jira_tickets (jira_key, summary, url, status, release_id)
+//                  VALUES ($1, $2, $3, $4, $5)
+//                  ON CONFLICT DO NOTHING`,
+//                 [ticket.key, ticket.summary, ticket.url, ticket.status, releaseId]
+//             );
             
-            for (const pr of ticket.pullRequests) {
-                await client.query(
-                    `INSERT INTO pull_requests (pr_number, title, url, author, release_id)
-                     VALUES ($1, $2, $3, $4, $5)
-                     ON CONFLICT DO NOTHING`,
-                    [pr.number, pr.title, pr.url, pr.author, releaseId]
-                );
-            }
-        }
+//             for (const pr of ticket.pullRequests) {
+//                 await client.query(
+//                     `INSERT INTO pull_requests (pr_number, title, url, author, release_id)
+//                      VALUES ($1, $2, $3, $4, $5)
+//                      ON CONFLICT DO NOTHING`,
+//                     [pr.number, pr.title, pr.url, pr.author, releaseId]
+//                 );
+//             }
+//         }
 
-        await client.query('COMMIT');
+//         await client.query('COMMIT');
         
-        res.json({ 
-            success: true, 
-            releaseId,
-            ticketsCount: tickets.length 
-        });
+//         res.json({ 
+//             success: true, 
+//             releaseId,
+//             ticketsCount: tickets.length 
+//         });
 
-    } catch (error) {
-        await client.query('ROLLBACK');
-        console.error('Error creating release:', error);
-        res.status(500).json({ error: error.message });
-    } finally {
-        client.release();
-    }
-});
+//     } catch (error) {
+//         await client.query('ROLLBACK');
+//         console.error('Error creating release:', error);
+//         res.status(500).json({ error: error.message });
+//     } finally {
+//         client.release();
+//     }
+// });
 
 module.exports = router;

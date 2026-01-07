@@ -4,8 +4,6 @@ const jiraRoutes = require('./jiraRoutes');
 const jiraService = require('../services/jiraService');
 const pool = require('../db');
 const { describe } = require('node:test');
-const { url } = require('inspector');
-const { title } = require('process');
 
 jest.mock('../services/jiraService');
 jest.mock('../db');
@@ -85,6 +83,21 @@ describe('POST /api/jira', () => {
 
         jiraService.getJiraTicketsForRelease.mockResolvedValue(mockTickets);
         mockClient.query.mockResolvedValueOnce(undefined); 
+        mockClient.query.mockResolvedValueOnce({ rows: [ { id: 1 } ] });
+        mockClient.query.mockResolvedValue(undefined);
+
+        const response = await reques(app)
+        .post('/api/jira')
+        .send({ version: '1.0.0' });
+
+        expect(response.status).toBe(200);
+        expect(response.body.success).toBe(true);
+        expect(response.body.releaseId).toBe(1);
+        expect(response.body.ticketsCount).toBe(2);
+
+        expect(mockClient.query).toHaveBeenCalledWith('BEGIN');
+        expect(mockClient.query).toHaveBeenCalledWith('COMMIT');
+        expect(mockClient.query).toHaveBeenCalled();
     });
 
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import './Hotfixes.css';
-import PageHeader from '../components/page-header';
+import PageHeader from '../components/page-header/page-header';
 import { API } from '../services/api';
 import { useProject } from '../contexts/ProjectContext';
 
