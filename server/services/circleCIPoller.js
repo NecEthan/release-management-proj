@@ -32,9 +32,32 @@ async function getWorkflowsForPipeline(pipelineId) {
 }
 
 function extractVersionFromCommit(commitMessage) {
-    const versionPattern = /\b(\d+\.\d+\.\d+)/;
-    const match = commitMessage.match(versionPattern);
-    return match ? match[1] : null;
+    const versionPattern = /\b(\d+\.\d+\.\d+)\b/g;
+    const matches = [...commitMessage.matchAll(versionPattern)];
+    
+    if (matches.length === 0) {
+        return null;
+    }
+    
+    if (matches.length === 1) {
+        return matches[0][1];
+    }
+    
+    const versions = matches.map(m => m[1]);
+    
+    versions.sort((a, b) => {
+        const aParts = a.split('.').map(Number);
+        const bParts = b.split('.').map(Number);
+        
+        for (let i = 0; i < 3; i++) {
+            if (aParts[i] !== bParts[i]) {
+                return bParts[i] - aParts[i];
+            }
+        }
+        return 0;
+    });
+    
+    return versions[0]; 
 }
 
 function shouldCascadeFromDevelop(commitMessage, branch) {
@@ -237,6 +260,14 @@ async function processDeployment(pipeline, workflow, project = 'YOT') {
         );
         
         if (existing.rows.length > 0) {
+            if (version) {
+                await pool.query(
+                    `UPDATE environments 
+                     SET current_version = $1, last_deployed_at = $2
+                     WHERE name = $3 AND project = $4`,
+                    [version, workflow.stopped_at, environmentName, project]
+                );
+            }
             return null;
         }
         
