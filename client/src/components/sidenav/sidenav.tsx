@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import './sidenav.css'
-import { useProject } from '../contexts/ProjectContext';
+import { useProject } from '../../contexts/ProjectContext';
 
 type MenuKey = 'home' | 'environments' | 'releases' | 'deployments' | 'hotfixes' | 'analytics'
 

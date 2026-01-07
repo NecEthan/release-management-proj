@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { SearchBarProps } from "../types/search-bar-props.type";
+import { SearchBarProps } from "../../types/search-bar-props.type";
 import "./search-bar.css";
 
 export default function SearchBar({
@@ -40,9 +40,9 @@ export default function SearchBar({
         </div>
 
         {showResults && searchQuery && (
-            <p className="search-bar-results">
-                Found {resultCount} result{resultCount !== 1 ? 's' : ''}
-            </p>    
+          <p className="search-bar-results">
+              Found {resultCount} result{resultCount !== 1 ? 's' : ''}
+          </p>    
         )}
     </div>
   )
