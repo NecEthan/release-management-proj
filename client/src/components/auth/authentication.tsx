@@ -1,3 +1,4 @@
+import React from 'react';
 import './authentication.css';
 import { useForm } from 'react-hook-form';
 import { FormData } from '../../types/form-data.type';

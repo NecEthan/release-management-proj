@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './Releases.css'
 import PageHeader from '../components/page-header/page-header'
 import { API } from '../services/api'

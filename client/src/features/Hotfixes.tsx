@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Hotfixes.css';
 import PageHeader from '../components/page-header/page-header';
 import { API } from '../services/api';

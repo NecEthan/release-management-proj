@@ -1,6 +1,11 @@
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
+  roots: ['<rootDir>/src'],
+  testMatch: [
+    '**/__tests__/**/*.test.{ts,tsx}',
+    '**/tests/**/*.test.{ts,tsx}'
+  ],
   moduleNameMapper: {
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
   },
@@ -8,9 +13,10 @@ module.exports = {
   transform: {
     '^.+\\.tsx?$': ['ts-jest', {
       tsconfig: {
-        jsx: 'react-jsx',
-      },
-    }],
+        jsx: 'react',
+        esModuleInterop: true,
+        allowSyntheticDefaultImports: true,
+      }
+    }]
   },
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
 };

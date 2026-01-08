@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Sidenav from './components/sidenav/sidenav'
 import MainContent from './components/main-content/main-content'
 import Home from './features/Home'
