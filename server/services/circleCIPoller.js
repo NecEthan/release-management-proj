@@ -75,7 +75,7 @@ function mapWorkflowToEnvironment(workflowName, branch) {
     const name = workflowName.toLowerCase();
     const branchName = branch.toLowerCase();
     
-    if (name === 'testing') return 'Release';
+    if (name === 'testing' || branchName === 'release') return 'Release';
     if (name === 'development' || branchName === 'develop') return 'Develop';
     if (name === 'preprod' || branchName === 'release-candidate') return 'Release-Candidate';
     if (name === 'production' || branchName === 'master') return 'Master';
@@ -148,11 +148,13 @@ async function processDeployment(pipeline, workflow, project = 'YOT') {
             }
             
         }
+        if (!version) {
+            return null;
+        }
         
         let releaseId = null;
         
-        if (version) {
-            let releaseResult = await pool.query(
+        let releaseResult = await pool.query(
                 'SELECT id FROM releases WHERE version = $1 AND project = $2',
                 [version, project]
             );
@@ -178,9 +180,6 @@ async function processDeployment(pipeline, workflow, project = 'YOT') {
                     const result = await jiraService.getJiraTicketsForRelease(jiraVersion, project);
                     tickets = result.tickets;
                 }
-                
-                let ticketCount = 0;
-                let prCount = 0;
                 
                 await pool.query(
                     `DELETE FROM jira_tickets 
@@ -210,7 +209,6 @@ async function processDeployment(pipeline, workflow, project = 'YOT') {
                             [ticket.key, ticket.summary, ticket.url, ticket.status, releaseId, project]
                         );
                     }
-                    ticketCount++;
                     
                     if (ticket.pullRequests.length > 0) {
                         await pool.query(
@@ -242,14 +240,12 @@ async function processDeployment(pipeline, workflow, project = 'YOT') {
                                 [pr.number, pr.title, pr.url, pr.author, releaseId, project]
                             );
                         }
-                        prCount++;
                     }
                 }
                 
             } catch (error) {
                 console.error(`Failed to fetch Jira tickets for ${version}: ${error.message}`);
             }
-        }
         
         const existing = await pool.query(
             `SELECT id FROM deployments 
@@ -261,12 +257,23 @@ async function processDeployment(pipeline, workflow, project = 'YOT') {
         
         if (existing.rows.length > 0) {
             if (version) {
-                await pool.query(
-                    `UPDATE environments 
-                     SET current_version = $1, last_deployed_at = $2
-                     WHERE name = $3 AND project = $4`,
-                    [version, workflow.stopped_at, environmentName, project]
+                const currentEnv = await pool.query(
+                    `SELECT current_version, last_deployed_at FROM environments 
+                     WHERE name = $1 AND project = $2`,
+                    [environmentName, project]
                 );
+                
+                const currentDeployedAt = currentEnv.rows[0]?.last_deployed_at;
+                const newDeployedAt = new Date(workflow.stopped_at);
+                
+                if (!currentDeployedAt || newDeployedAt >= new Date(currentDeployedAt)) {
+                    await pool.query(
+                        `UPDATE environments 
+                         SET current_version = $1, last_deployed_at = $2
+                         WHERE name = $3 AND project = $4`,
+                        [version, workflow.stopped_at, environmentName, project]
+                    );
+                }
             }
             return null;
         }
