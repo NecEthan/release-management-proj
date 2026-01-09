@@ -4,7 +4,8 @@ module.exports = {
   roots: ['<rootDir>/src'],
   testMatch: [
     '**/__tests__/**/*.test.{ts,tsx}',
-    '**/tests/**/*.test.{ts,tsx}'
+    '**/tests/**/*.test.{ts,tsx}',
+    '**/src/**/*.test.{ts,tsx}'
   ],
   moduleNameMapper: {
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',

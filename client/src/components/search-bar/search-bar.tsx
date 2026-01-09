@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SearchBarProps } from "../../types/search-bar-props.type";
 import "./search-bar.css";
 
