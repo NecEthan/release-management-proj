@@ -5,7 +5,8 @@ async function getJiraTicketsForRelease(version, project = 'YOT') {
     const jiraTicketBaseUrl = `${baseUrl}/browse`;
 
     const jiraProject = project === 'pathways-ui' ? 'IDV' : 'PP';
-    const jql = `project = ${jiraProject} AND fixVersion = "${version}" order by created DESC`;
+    const projectSuffix = project === 'pathways-ui' ? ' (MM)' : ' (YOT)';
+    const jql = `project = ${jiraProject} AND (fixVersion = "${version}" OR fixVersion = "${version}${projectSuffix}") order by created DESC`;
     const fields = 'summary,status,priority,assignee,created,updated';
     const url = `${baseUrl}/rest/api/3/search/jql?jql=${encodeURIComponent(jql)}&fields=${fields}&maxResults=50`;
     
@@ -22,9 +23,16 @@ async function getJiraTicketsForRelease(version, project = 'YOT') {
 
     const data = await response.json();
     
+    const releaseBranch = `${version}_release_branch`;
+    const allPRs = await getPRsForReleaseBranch(releaseBranch, project);
+    
     const ticketsWithPRs = [];
     for (const issue of data.issues || []) {
-        const pullRequests = await getGitHubCommitsForTicket(issue.key, project);
+        const ticketPRs = allPRs.filter(pr => {
+            const prText = `${pr.title} ${pr.body || ''}`;
+            return prText.includes(issue.key);
+        });
+        
         ticketsWithPRs.push({
             key: issue.key,
             url: `${jiraTicketBaseUrl}/${issue.key}`,
@@ -34,14 +42,14 @@ async function getJiraTicketsForRelease(version, project = 'YOT') {
             assignee: issue.fields.assignee?.displayName || 'Unassigned',
             created: issue.fields.created,
             updated: issue.fields.updated,
-            pullRequests: pullRequests
+            pullRequests: ticketPRs
         });
     }
 
     return { tickets: ticketsWithPRs, total: ticketsWithPRs.length };
 }
 
-async function getGitHubCommitsForTicket(ticketKey, project = 'YOT') {
+async function getPRsForReleaseBranch(branchName, project = 'YOT') {
     const githubToken = process.env.GITHUB_TOKEN;
     const githubOrg = process.env.GITHUB_ORG;
     const githubRepo = project === 'pathways-ui' 
@@ -52,28 +60,45 @@ async function getGitHubCommitsForTicket(ticketKey, project = 'YOT') {
         throw new Error('GitHub configuration missing: GITHUB_TOKEN, GITHUB_ORG, or GITHUB_REPO not set');
     }
 
-    const searchUrl = `https://api.github.com/search/issues?q=${encodeURIComponent(ticketKey)}+repo:${githubOrg}/${githubRepo}+type:pr`;
+    const branchFormats = [
+        branchName.replace('_release_branch', '-release-branch'),
+        branchName.replace('_release_branch', '-Release-Branch')  
+    ];
     
-    const response = await fetch(searchUrl, {
-        headers: {
-            'Authorization': `Bearer ${githubToken}`,
-            'Accept': 'application/vnd.github.v3+json'
+    let allPRs = [];
+    
+    for (const branch of branchFormats) {
+        const searchUrl = `https://api.github.com/search/issues?q=base:${encodeURIComponent(branch)}+repo:${githubOrg}/${githubRepo}+type:pr+is:merged&per_page=100`;
+        
+        const response = await fetch(searchUrl, {
+            headers: {
+                'Authorization': `Bearer ${githubToken}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        });
+
+        if (!response.ok) {
+            continue;
         }
-    });
 
-    if (!response.ok) {
-        return [];
+        const data = await response.json();
+        
+        if (data.items && data.items.length > 0) {
+            const prs = data.items.map(pr => ({
+                number: pr.number,
+                title: pr.title,
+                url: pr.html_url,
+                state: pr.state,
+                author: pr.user.login,
+                body: pr.body || ''
+            }));
+            allPRs = allPRs.concat(prs);
+        }
     }
-
-    const data = await response.json();
     
-    return data.items.map(pr => ({
-        number: pr.number,
-        title: pr.title,
-        url: pr.html_url,
-        state: pr.state,
-        author: pr.user.login
-    }));
+    const uniquePRs = Array.from(new Map(allPRs.map(pr => [pr.number, pr])).values());
+    
+    return uniquePRs;
 }
 
 module.exports = {
