@@ -3,6 +3,8 @@ import './authentication.css';
 import { useForm } from 'react-hook-form';
 import { FormData } from '../../types/form-data.type';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 export default function Authentication() {
   const { 
     register, 
@@ -14,7 +16,7 @@ export default function Authentication() {
   const onSubmit = async (data: FormData) => {
     
     try {
-      const response = await fetch('/api/two-fa/authenticate/user-credentials', {
+      const response = await fetch(`${API_BASE_URL}/two-fa/authenticate/user-credentials`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
