@@ -1,7 +1,8 @@
 
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL;
 
+//  'http://localhost:5000/api';
 export const API = {
     async syncCircleCI(currentProject: string) {
         const response = await fetch(`${API_BASE_URL}/circleci/poll`, {
@@ -56,7 +57,7 @@ export const API = {
     },
 
     async getReleaseStatsLastMonth(currentProject: string) {
-        const response = await fetch(`http://localhost:5000/api/releases/stats/last-month?project=${currentProject}`);
+        const response = await fetch(`${API_BASE_URL}/releases/stats/last-month?project=${currentProject}`);
         return await response.json();
     },
 
