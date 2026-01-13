@@ -14,7 +14,7 @@ export default function Authentication() {
   const onSubmit = async (data: FormData) => {
     
     try {
-      const response = await fetch('/api/two-fa/authenticate/user-credentials', {
+      const response = await fetch('https://stable-yot.i2ncloud.com/authenticate/user-credentials', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
