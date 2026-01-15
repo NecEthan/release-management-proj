@@ -265,7 +265,7 @@ export default function Deployments() {
 
             {selectedDeployment && (
                 <div className="dialog-overlay" onClick={closeDialog}>
-                    <div className="dialog" onClick={(e) => e.stopPropagation()}>
+                    <div className="dialog dialog-no-scroll" onClick={(e) => e.stopPropagation()}>
                         <div className="dialog-header">
                             <h2>Deployment Details</h2>
                             <button className="close-button" onClick={closeDialog}>×</button>
