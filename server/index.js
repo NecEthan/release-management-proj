@@ -19,6 +19,14 @@ const JWT_SECRET = process.env.JWT_SECRET;
 app.use(cors());
 app.use(express.json());
 
+app.get('/health', (req, res) => {
+  res.status(200).json({ 
+    status: 'ok', 
+    timestamp: new Date(),
+    uptime: process.uptime()
+  });
+});
+
 app.post('/api/auth/login', async (req, res) => {
   const { username, password } = req.body;
   
