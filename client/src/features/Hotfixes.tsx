@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import './Hotfixes.css';
 import PageHeader from '../components/page-header/page-header';
 import { API } from '../services/api';
@@ -6,6 +6,7 @@ import { useProject } from '../contexts/ProjectContext';
 
 export default function Hotfixes() {
   const [hotfixes, setHotfixes] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const { currentProject } = useProject();
 
   useEffect(() => {
@@ -14,10 +15,14 @@ export default function Hotfixes() {
 
   const fetchHotfixes = async () => {
     try {
+      setLoading(true);
       const data = await API.getHotfixes(currentProject);
+      console.log('Fetched hotfixes:', data);
       setHotfixes(data.hotfixes || []);
     } catch (error) {
       console.error('Error fetching hotfixes:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -52,8 +57,10 @@ export default function Hotfixes() {
       />
 
       <div className="hotfixes-list">
-        {hotfixes.length === 0 ? (
-          <div >
+        {loading ? (
+          <div>Loading hotfixes...</div>
+        ) : hotfixes.length === 0 ? (
+          <div>
             No hotfixes found for this project
           </div>
         ) : (

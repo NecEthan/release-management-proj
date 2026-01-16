@@ -13,6 +13,8 @@ export default function Home() {
   const [releases, setReleases] = useState<any[]>([]);
   const [lastDeployedTime, setLastDeploymentTime] = useState<string>('');
   const [chartData, setChartData] = useState<any[]>([]);
+  const [hotfixesThisMonth, setHotfixesThisMonth] = useState<number>(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchALlDAta();
@@ -20,11 +22,17 @@ export default function Home() {
 
 
   const fetchALlDAta = async () => {
-    await fetchProductionVersion();
-    await fetchReleasesThisMonth();
-    await fetchReleases();
-    await fetchLastDeployment();
-    await fetchDeploymentFrequency();
+    try {
+      setLoading(true);
+      await fetchProductionVersion();
+      await fetchReleasesThisMonth();
+      await fetchReleases();
+      await fetchLastDeployment();
+      await fetchDeploymentFrequency();
+      await fetchHotfixesThisMonth();
+    } finally {
+      setLoading(false);
+    }
   };
 
   const fetchLastDeployment = async () => {
@@ -118,6 +126,24 @@ export default function Home() {
     }
   };
 
+  const fetchHotfixesThisMonth = async () => {
+    try {
+      const data = await API.getHotfixes(currentProject);
+      const now = new Date();
+      const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      
+      const hotfixesCount = data.hotfixes.filter((hotfix: any) => {
+        const detectedDate = new Date(hotfix.detected_at);
+        return detectedDate >= firstDayOfMonth;
+      }).length;
+      
+      setHotfixesThisMonth(hotfixesCount);
+    } catch (error) {
+      console.error('Error fetching hotfixes count:', error);
+      setHotfixesThisMonth(0);
+    }
+  };
+
   const handleSync = async () => {
     try {
       await API.syncCircleCI(currentProject);
@@ -125,6 +151,7 @@ export default function Home() {
       await fetchReleasesThisMonth();
       await fetchReleases();
       await fetchLastDeployment();
+      await fetchHotfixesThisMonth();
     } catch (error) {
       console.error('Error syncing with CircleCI:', error);
     }
@@ -135,7 +162,18 @@ export default function Home() {
     currentLiveVersion: productionVersion,
     lastDeployedTime: lastDeployedTime,
     releasesThisMonth: releasesThisMonth,
-    activeHotfixes: 2,
+    activeHotfixes: hotfixesThisMonth,
+  }
+
+  if (loading) {
+    return (
+      <div className="home">
+        <PageHeader title="Overview" description="Key statistics and recent releases" onSync={handleSync} />
+        <div className="stats-container">
+          <div>Loading overview data...</div>
+        </div>
+      </div>
+    );
   }
 
   return (

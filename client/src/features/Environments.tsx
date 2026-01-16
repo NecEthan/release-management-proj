@@ -6,6 +6,7 @@ import { useProject } from '../contexts/ProjectContext';
 export default function Environments() {
 
   const [environments, setEnvironments] = useState<Environment[]>([]);
+  const [loading, setLoading] = useState(true);
   const { currentProject } = useProject();
 
   useEffect(() => {
@@ -15,11 +16,14 @@ export default function Environments() {
 
   const fetchEnvironments = async () => {
     try {
+      setLoading(true);
       const response = await fetch('http://localhost:5000/api/releases/environments?project=' + currentProject);
       const data = await response.json();
       setEnvironments(data.environments);
     } catch (error) {
       console.error('Error fetching environments:', error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -44,7 +48,9 @@ export default function Environments() {
       />
 
       <div className="environments-container">
-        {environments.length === 0 ? (
+        {loading ? (
+          <div className="no-data-message">Loading environments...</div>
+        ) : environments.length === 0 ? (
           <div className="no-data-message">
             No environments found for this project
           </div>

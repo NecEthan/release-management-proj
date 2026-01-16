@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import './sidenav.css'
 import { useProject } from '../../contexts/ProjectContext';
 
-type MenuKey = 'home' | 'environments' | 'releases' | 'deployments' | 'hotfixes' | 'analytics'
+type MenuKey = 'home' | 'environments' | 'releases' | 'deployments' | 'hotfixes'
 
 const projects = [
     { value: 'YOT', label: 'YOT' },
@@ -27,7 +27,6 @@ export default function Sidenav({
     { key: 'releases', label: 'Releases' },
     { key: 'deployments', label: 'Deployments' },
     { key: 'hotfixes', label: 'Hotfixes' },
-    { key: 'analytics', label: 'Analytics' },
   ]
 
   const handleSelect = (project: typeof projects[0]) => {

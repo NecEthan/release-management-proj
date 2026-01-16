@@ -11,6 +11,7 @@ export default function Deployments() {
     const [filteredDeployments, setFilteredDeployments] = useState<Deployment[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [selectedDeployment, setSelectedDeployment] = useState<Deployment | null>(null);
+    const [loading, setLoading] = useState(true);
 
     const [currentPage, setCurrentPage] = useState(0);
     const itemsPerPage = 5;
@@ -38,12 +39,15 @@ export default function Deployments() {
 
     const fetchDeployments = async () => {
         try {
+            setLoading(true);
             const data = await API.getDeployments(project.currentProject);
             setDeployments(data.deployments);
             setFilteredDeployments(data.deployments);
             setCurrentPage(0);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to fetch deployments');
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -142,6 +146,10 @@ export default function Deployments() {
 
     if (error) {
         return <div className="deployments-container error">Error: {error}</div>;
+    }
+
+    if (loading) {
+        return <div className="deployments-container">Loading deployments...</div>;
     }
 
     return (

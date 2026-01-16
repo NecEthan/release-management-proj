@@ -18,6 +18,7 @@ export default function Releases() {
   const [releases, setReleases] = useState<Release[]>([])
   const [selectedRelease, setSelectedRelease] = useState<any>(null)
   const [activeTab, setActiveTab] = useState<'jira' | 'prs'>('jira')
+  const [loading, setLoading] = useState(true)
   const { currentProject } = useProject();
 
   const [currentPage, setCurrentPage] = useState(0);
@@ -33,11 +34,14 @@ export default function Releases() {
 
   const fetchReleases = async () => {
     try {
+      setLoading(true);
       const data = await API.getReleases(currentProject);
       setReleases(data.releases);
       setCurrentPage(0);
     } catch (error) {
       console.error('Error fetching releases:', error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -71,7 +75,9 @@ export default function Releases() {
     <div className="releases">
       <PageHeader title="Releases" description="Track and manage all releases" onSync={handleSync} />
       <div className="releases-list">
-        {releases.length === 0 ? (
+        {loading ? (
+          <div className="no-data-message">Loading releases...</div>
+        ) : releases.length === 0 ? (
           <div className="no-data-message">
             No releases found for this project
           </div>
