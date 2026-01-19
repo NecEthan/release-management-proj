@@ -17,7 +17,6 @@ export default function Hotfixes() {
     try {
       setLoading(true);
       const data = await API.getHotfixes(currentProject);
-      console.log('Fetched hotfixes:', data);
       setHotfixes(data.hotfixes || []);
     } catch (error) {
       console.error('Error fetching hotfixes:', error);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import './page-header.css';
 import { PageHeaderProps } from "../../types/page-header-props.type";
 
