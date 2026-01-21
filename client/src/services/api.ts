@@ -74,5 +74,17 @@ export const API = {
             throw new Error('Failed to fetch hotfix details');
         }
         return response.json();
+    },
+
+    async login(username: string, password: string) {
+        const response = await fetch(`${API_BASE_URL}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+        if (!response.ok) {
+            throw new Error('Invalid username or password');
+        }
+        return response.json();
     }
 }

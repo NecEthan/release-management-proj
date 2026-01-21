@@ -4,6 +4,12 @@ import '@testing-library/jest-dom';
 import Authentication from './authentication';
 import userEvent from '@testing-library/user-event';
 
+jest.mock('../../services/api', () => ({
+    API: {
+        login: jest.fn()
+    }
+}));
+
 describe('Authentication Component - Elements', () => {
     test('renders the heading', () => {
         render(<Authentication />);

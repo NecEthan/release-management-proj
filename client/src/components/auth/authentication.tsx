@@ -2,8 +2,7 @@ import React from 'react';
 import './authentication.css';
 import { useForm } from 'react-hook-form';
 import { FormData } from '../../types/form-data.type';
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+import { API } from '../../services/api';
 
 export default function Authentication() {
   const { 
@@ -14,39 +13,22 @@ export default function Authentication() {
   } = useForm<FormData>();
 
   const onSubmit = async (data: FormData) => {
-    
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      });
+      const responseData = await API.login(data.username, data.password);
       
+      localStorage.setItem('isAuthenticated', 'true');
+      localStorage.setItem('username', data.username);
       
-      if (response.ok) {
-        const responseData = await response.json();
-        
-        localStorage.setItem('isAuthenticated', 'true');
-        localStorage.setItem('username', data.username);
-        
-        if (responseData.token) {
-          localStorage.setItem('token', responseData.token);
-        }
-        
-        window.location.reload();
-      } else {
-        setError('root', { 
-          type: 'manual',
-          message: 'Invalid username or password' 
-        });
+      if (responseData.token) {
+        localStorage.setItem('token', responseData.token);
       }
+      
+      window.location.reload();
     } catch (error) {
       console.error('Error during authentication:', error);
       setError('root', { 
         type: 'manual',
-        message: 'Authentication failed. Please try again.' 
+        message: error instanceof Error ? error.message : 'Authentication failed. Please try again.' 
       });
     }
   }
