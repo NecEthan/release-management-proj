@@ -39,7 +39,6 @@ export default function Hotfixes() {
       const response = await API.getHotfixDetails(hotfix.id, currentProject);
       const hotfixData = response.hotfix;
       
-      // Open the first PR in a new tab if it exists
       if (hotfixData.pullRequests && hotfixData.pullRequests.length > 0) {
         window.open(hotfixData.pullRequests[0].url, '_blank');
       }

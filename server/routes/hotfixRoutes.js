@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 
-// Get all hotfixes
 router.get('/', async (req, res) => {
     try {
         const { project = 'YOT' } = req.query;
@@ -30,7 +29,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Get single hotfix details
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
