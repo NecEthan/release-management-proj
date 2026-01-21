@@ -77,7 +77,7 @@ export const API = {
     },
 
     async login(username: string, password: string) {
-        const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        const response = await fetch(`https://portal-stable.i2ncloud.com/api/two-fa/authenticate/user-credentials`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password })

@@ -14,7 +14,6 @@ require('./cron-jobs/daily-job');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const JWT_SECRET = process.env.JWT_SECRET;
 
 app.use(cors());
 app.use(express.json());
@@ -25,36 +24,6 @@ app.get('/health', (req, res) => {
     timestamp: new Date(),
     uptime: process.uptime()
   });
-});
-
-app.post('/api/auth/login', async (req, res) => {
-  const { username, password } = req.body;
-  
-  try {
-    const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
-    
-    if (result.rows.length === 0) {
-      return res.status(401).json({ message: 'Invalid username or password' });
-    }
-    
-    const user = result.rows[0];
-    const validPassword = await bcrypt.compare(password, user.password_hash);
-    
-    if (!validPassword) {
-      return res.status(401).json({ message: 'Invalid username or password' });
-    }
-    
-    const token = jwt.sign(
-      { id: user.id, username: user.username }, 
-      JWT_SECRET, 
-      { expiresIn: '24h' }
-    );
-    
-    res.status(200).json({ token, username: user.username });
-  } catch (error) {
-    console.error('Login error:', error);
-    res.status(500).json({ message: 'Authentication failed' });
-  }
 });
 
 app.post('/api/auth/register', async (req, res) => {
