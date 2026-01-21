@@ -83,11 +83,6 @@ export default function Sidenav({
                   onClick={() => handleSelect(project)}
                 >
                   {project.label}
-                  {selectedProject.value === project.value && (
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="#ff8c00">
-                      <path d="M13 4L6 11L3 8"/>
-                    </svg>
-                  )}
                 </div>
               ))}
             </div>
