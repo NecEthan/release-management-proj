@@ -76,15 +76,15 @@ export const API = {
         return response.json();
     },
 
-    async login(username: string, password: string) {
-        const response = await fetch(`https://portal-stable.i2ncloud.com/api/two-fa/authenticate/user-credentials`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password })
-        });
-        if (!response.ok) {
-            throw new Error('Invalid username or password');
-        }
-        return response.json();
+   async login(username: string, password: string) {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+    });
+    if (!response.ok) {
+        throw new Error('Invalid username or password');
     }
+    return response.json();
+}
 }

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import './Environments.css'
 import PageHeader from '../components/page-header/page-header';
 import { useProject } from '../contexts/ProjectContext';
+import { API } from '../services/api';
 
 export default function Environments() {
 
@@ -17,8 +18,7 @@ export default function Environments() {
   const fetchEnvironments = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/releases/environments?project=' + currentProject);
-      const data = await response.json();
+      const data = await API.getEnvironments(currentProject);
       setEnvironments(data.environments);
     } catch (error) {
       console.error('Error fetching environments:', error);
@@ -29,11 +29,7 @@ export default function Environments() {
 
   const handleSync = async () => {
     try {
-      await fetch('http://localhost:5000/api/circleci/poll', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ project: currentProject })
-      });
+      await API.syncCircleCI(currentProject);
       await fetchEnvironments();
     } catch (error) {
       console.error('Error syncing:', error);

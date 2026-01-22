@@ -2,14 +2,13 @@ require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
-const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const pool = require('./db');
 const jiraRoutes = require('./routes/jiraRoutes');
 const releaseRoutes = require('./routes/releaseRoutes');
 const hotfixRoutes = require('./routes/hotfixRoutes');
 const authenticateToken = require('./middleware/auth');
-
+const authRoutes = require('./routes/authRoutes');
 require('./cron-jobs/daily-job');
 
 const app = express();
@@ -46,7 +45,7 @@ app.post('/api/auth/register', async (req, res) => {
     }
   }
 });
-
+app.use('/api/auth', authRoutes);
 app.use('/api/jira', authenticateToken, jiraRoutes);
 app.use('/api/releases', authenticateToken, releaseRoutes);
 app.use('/api/circleci', authenticateToken, require('./routes/circleCIRoutes'));
